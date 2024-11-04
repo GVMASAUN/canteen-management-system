@@ -1,0 +1,18 @@
+<div class="food-items-container">
+    <h2>Food Items</h2>
+    <button class="add-item-button" routerLink="/food">Add Item</button>
+
+    <p *ngIf="response?.error">{{response.error}}</p>
+    <p *ngIf="response?.message">{{response.message}}</p>
+    <div class="food-item" *ngFor="let foodItem of foodItems">
+        <div class="food-item-info">
+            <h2>{{ foodItem.itemId }}&nbsp;&nbsp;&nbsp; {{ foodItem.itemName }}</h2>
+            <p class="price">₹{{ foodItem.itemPrice }}</p>
+        </div>
+
+        <div class="action-buttons">
+            <button (click)="edit(foodItem.itemId)">Edit</button>
+            <!-- <button (click)="deleteItem(foodItem.itemId)">Delete</button> -->
+        </div>
+    </div>
+</div>

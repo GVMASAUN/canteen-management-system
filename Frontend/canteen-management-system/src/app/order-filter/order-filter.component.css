@@ -1,0 +1,30 @@
+.user-select-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+}
+
+label {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+select {
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    width: 200px;
+}
+
+select:hover {
+    border-color: #0056b3;
+}
+
+select:focus {
+    outline: none;
+    border-color: #0056b3;
+}

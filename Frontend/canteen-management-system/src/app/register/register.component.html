@@ -1,0 +1,76 @@
+<form [formGroup]="registerForm" (ngSubmit)="registerUser()" class="register-form">
+    <h2>Register</h2>
+    <p *ngIf="response?.error">{{response.error}}</p>
+    <p *ngIf="response?.message">{{response.message}}</p>
+
+    <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" id="name" placeholder="Enter Name" formControlName="name" required>
+        <div *ngIf="registerForm.get('name')?.invalid && (registerForm.get('name')?.touched || registerForm.get('name')?.dirty)"
+            class="error-message">
+            <div *ngIf="registerForm.get('name')?.hasError('required')">Name is required.</div>
+            <div *ngIf="registerForm.get('name')?.hasError('pattern')">Name must only contain letters and spaces.</div>
+
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" placeholder="Enter Email" formControlName="email" required>
+        <div *ngIf="registerForm.get('email')?.invalid && (registerForm.get('email')?.touched || registerForm.get('email')?.dirty)"
+            class="error-message">
+            <div *ngIf="registerForm.get('email')?.hasError('required')">Email is required.</div>
+            <div *ngIf="registerForm.get('email')?.hasError('email')">Invalid email format.</div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" formControlName="password" id="password" placeholder="Enter Password" required>
+        <div *ngIf="registerForm.get('password')?.invalid && (registerForm.get('password')?.touched || registerForm.get('password')?.dirty)"
+            class="error-message">
+            <div *ngIf="registerForm.get('password')?.hasError('required')">Password is required.</div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="confirmPassword">Confirm Password:</label>
+        <input type="password" formControlName="confirmPassword" id="confirmPassword" placeholder="Confirm Password"
+            required>
+        <div class="error-message">
+            <div
+                *ngIf="registerForm.get('confirmPassword')?.hasError('required') && (registerForm.get('confirmPassword')?.touched || registerForm.get('confirmPassword')?.dirty)">
+                Confirm Password is required.</div>
+            <div
+                *ngIf="registerForm.hasError('passwordMismatch') && (registerForm.get('confirmPassword')?.touched || registerForm.get('confirmPassword')?.dirty)">
+                Passwords do not match.
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="role">Role:</label>
+        <select formControlName="role" id="role" required>
+            <option value="ROLE_USER">USER</option>
+            <option value="ROLE_ADMIN">ADMIN</option>
+        </select>
+        <div *ngIf="registerForm.get('role')?.invalid && (registerForm.get('role')?.touched || registerForm.get('role')?.dirty)"
+            class="error-message">
+            <div *ngIf="registerForm.get('role')?.hasError('required')">Role is required.</div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="phone">Phone Number:</label>
+        <input type="tel" formControlName="phoneNumber" id="phone" placeholder="Enter Phone Number" required>
+        <div *ngIf="registerForm.get('phoneNumber')?.invalid && (registerForm.get('phoneNumber')?.touched || registerForm.get('phoneNumber')?.dirty)"
+            class="error-message">
+            <div *ngIf="registerForm.get('phoneNumber')?.hasError('required')">Phone number is required.</div>
+            <div *ngIf="registerForm.get('phoneNumber')?.hasError('pattern')">Phone number must be of 10 characters and
+                all characters should be digits.</div>
+        </div>
+    </div>
+
+    <button type="submit" class="register-button">{{ isEditing ? 'Update' : 'Register'
+        }}</button>
+</form>

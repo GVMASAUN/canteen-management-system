@@ -1,0 +1,119 @@
+.food-items-container {
+    position: relative;
+    padding: 10px;
+    max-width: 600px;
+    margin: auto;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.food-item {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 5px;
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: transform 0.1s;
+}
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #3498db;
+    color: white;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+button:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+}
+
+button:active {
+    background-color: #1c6691;
+    transform: translateY(1px);
+}
+
+button.add {
+    background-color: #2ecc71;
+}
+
+button.add:hover {
+    background-color: #27ae60;
+}
+
+button.remove {
+    background-color: #e74c3c;
+}
+
+button.remove:hover {
+    background-color: #c0392b;
+}
+
+.order-summary {
+    margin-top: 20px;
+    border-top: 2px solid #ccc;
+    padding-top: 10px;
+}
+
+.place-order {
+    margin-top: 10px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #2ecc71;
+    color: white;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.place-order:hover {
+    background-color: #27ae60;
+}
+
+.place-order:active {
+    background-color: #1c7a3b;
+}
+.food-item-form {
+    max-width: 400px;
+    margin: auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.food-item-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
+.add-item-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.add-item-button:hover {
+    background-color: #27ae60;
+}
