@@ -3,6 +3,7 @@ package com.codeinsight.exercise.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.codeinsight.exercise.DTO.FoodItemDTO;
@@ -23,14 +24,14 @@ public class FoodItemServiceImpl implements FoodItemService {
 			FoodItem foodItem = new FoodItem();
 			foodItem.setItemName(foodItemDTO.getItemName());
 			foodItem.setItemPrice(foodItemDTO.getItemPrice());
-			
+
 			this.saveFoodItem(foodItem);
-			
+
 			responseDTO.setMessage("Item Added Successfully");
-			responseDTO.setStatusCode(200);
+			responseDTO.setStatusCode(HttpStatus.CREATED.value());
 		} catch (Exception exception) {
-			responseDTO.setError(exception.getMessage());
-			responseDTO.setStatusCode(500);
+			responseDTO.setError("Error creating food item: " + exception.getMessage());
+			responseDTO.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		}
 		return responseDTO;
 	}
@@ -50,10 +51,10 @@ public class FoodItemServiceImpl implements FoodItemService {
 			foodItemRepository.save(foodItem);
 
 			responseDTO.setMessage("Item updated Successfully");
-			responseDTO.setStatusCode(200);
+			responseDTO.setStatusCode(HttpStatus.OK.value());
 		} catch (Exception exception) {
-			responseDTO.setError(exception.getMessage());
-			responseDTO.setStatusCode(500);
+			responseDTO.setError("Error updating food item: " + exception.getMessage());
+			responseDTO.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		}
 		return responseDTO;
 	}
@@ -64,12 +65,12 @@ public class FoodItemServiceImpl implements FoodItemService {
 		try {
 			List<FoodItem> foodItems = foodItemRepository.findAll();
 			responseDTO.setFoodItems(foodItems);
-			
+
 			responseDTO.setMessage("Food Items fetched Successfully");
-			responseDTO.setStatusCode(200);
+			responseDTO.setStatusCode(HttpStatus.OK.value());
 		} catch (Exception exception) {
-			responseDTO.setStatusCode(500);
-			responseDTO.setError(exception.getMessage());
+			responseDTO.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			responseDTO.setError("Error fetching food items: " + exception.getMessage());
 		}
 		return responseDTO;
 	}
@@ -79,12 +80,12 @@ public class FoodItemServiceImpl implements FoodItemService {
 		ResponseDTO responseDTO = new ResponseDTO();
 		try {
 			foodItemRepository.deleteById(id);
-			
-			responseDTO.setStatusCode(200);
+
+			responseDTO.setStatusCode(HttpStatus.NO_CONTENT.value());
 			responseDTO.setMessage("Item deleted Successfully");
 		} catch (Exception exception) {
-			responseDTO.setStatusCode(500);
-			responseDTO.setError(exception.getMessage());
+			responseDTO.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			responseDTO.setError("Error deleting food item: " + exception.getMessage());
 		}
 		return responseDTO;
 	}

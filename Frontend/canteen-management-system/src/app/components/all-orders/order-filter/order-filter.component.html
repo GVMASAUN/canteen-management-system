@@ -1,0 +1,7 @@
+<div class="user-select-container">
+    <label for="userSelect">Select User:</label>
+    <select id="userSelect" [(ngModel)]="selectedUser" (change)="onUserChange()">
+        <option value="all">All Users</option>
+        <option *ngFor="let user of users" [value]="user.userId">{{ user.userId }} | {{ user.name }}</option>
+    </select>
+</div>
