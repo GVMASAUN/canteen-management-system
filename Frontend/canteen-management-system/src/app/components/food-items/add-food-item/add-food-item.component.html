@@ -6,7 +6,7 @@
         <label for="foodItem">Food Item:</label>
         <input type="text" id="foodItem" placeholder="{{ isEditing ? 'Edit food item' : 'Add food item' }}"
             formControlName="itemName" required>
-        <div *ngIf="(foodItemForm.get('itemName')?.invalid) && ((foodItemForm.get('itemName')?.touched) || (foodItemForm.get('itemName')?.dirty))"
+        <div *ngIf="foodItemForm.get('itemName')?.invalid && (foodItemForm.get('itemName')?.touched || foodItemForm.get('itemName')?.dirty)"
             class="error-message">
             <div *ngIf="foodItemForm.get('itemName')?.hasError('required')">Food item name is required.</div>
         </div>
@@ -16,7 +16,7 @@
         <label for="itemPrice">Item Price:</label>
         <input type="number" id="itemPrice" placeholder="{{ isEditing ? 'Edit price' : 'Enter price' }}"
             formControlName="itemPrice" required>
-        <div *ngIf="(foodItemForm.get('itemPrice')?.invalid) && ((foodItemForm.get('itemPrice')?.touched) || (foodItemForm.get('itemPrice')?.dirty))"
+        <div *ngIf="foodItemForm.get('itemPrice')?.invalid && (foodItemForm.get('itemPrice')?.touched || foodItemForm.get('itemPrice')?.dirty)"
             class="error-message">
             <div *ngIf="foodItemForm.get('itemPrice')?.hasError('required')">Item price is required.</div>
         </div>

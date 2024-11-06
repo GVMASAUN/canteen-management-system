@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { User } from '../../models/user';
 import { LoginService } from '../../services/user/login.service';
 import { Router } from '@angular/router';
+import { GenericResponseDTO } from 'src/app/models/generic-response-dto';
 
 @Component({
   selector: 'app-login',
@@ -10,9 +11,10 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
+  private readonly ok: number = 200;
   loginForm: FormGroup;
   user: User;
-  response: any;
+  response: GenericResponseDTO<User>;
 
   constructor(private formBuilder: FormBuilder, private loginService: LoginService, private router: Router) {
     this.loginForm = this.formBuilder.group({
@@ -31,8 +33,8 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       this.loginService.login(this.loginForm.value).subscribe(response => {
         this.response = response;
-        if (response?.error == null || response.statusCode == 200) {
-          localStorage.setItem('currentUser', JSON.stringify(response));
+        if ((response?.error == null) || (response.statusCode == this.ok)) {
+          localStorage.setItem('currentUser', JSON.stringify(response.data));
           this.router.navigate(['/orders']);
         }
       });

@@ -5,19 +5,19 @@ import java.util.List;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.codeinsight.exercise.DTO.ResponseDTO;
+import com.codeinsight.exercise.DTO.GenericResponseDTO;
 import com.codeinsight.exercise.DTO.UserDTO;
 
 public interface UserService {
-	ResponseDTO registerUser(UserDTO userDTO, PasswordEncoder passwordEncoder);
+	public GenericResponseDTO<UserDTO> registerUser(UserDTO userDTO, PasswordEncoder passwordEncoder);
 
-	ResponseDTO login(UserDTO userDTO, AuthenticationManager authenticationManager);
+	public GenericResponseDTO<UserDTO> login(UserDTO userDTO, AuthenticationManager authenticationManager);
 	
-	List<UserDTO> getUsers();
+	public GenericResponseDTO<List<UserDTO>> getUsers();
 
-	ResponseDTO updateUser(Long userId, UserDTO userDTO, PasswordEncoder passwordEncoder);
+	public GenericResponseDTO<UserDTO> updateUser(Long userId, UserDTO userDTO, PasswordEncoder passwordEncoder);
 
-	ResponseDTO deleteUser(Long userId);
+	public GenericResponseDTO<UserDTO> deleteUser(Long userId);
 	
-	UserDTO getUserById(Long userId);
+	public GenericResponseDTO<UserDTO> getUserById(Long userId);
 }

@@ -1,5 +1,5 @@
 export interface UserOrder {
-    itemId: number,
-    itemName: string,
-    quantity: number
+    itemId: number;
+    itemName: string;
+    quantity: number;
 }

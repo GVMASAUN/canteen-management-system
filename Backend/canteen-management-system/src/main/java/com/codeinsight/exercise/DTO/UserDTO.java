@@ -11,10 +11,10 @@ public class UserDTO {
 	private String email;
 	private String password;
 	private String role;
+	private String token;
+	private String refreshToken;
 	private Long phoneNumber;
-	private String message;
-	private int statusCode;
-	private String error;
+	private String expirationTime;
 
 	public UserDTO() {
 	}
@@ -25,30 +25,6 @@ public class UserDTO {
 		this.email = email;
 		this.name = name;
 		this.phoneNumber = phoneNumber;
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
-	}
-
-	public int getStatusCode() {
-		return statusCode;
-	}
-
-	public void setStatusCode(int statusCode) {
-		this.statusCode = statusCode;
-	}
-
-	public String getError() {
-		return error;
-	}
-
-	public void setError(String error) {
-		this.error = error;
 	}
 
 	public Long getUserId() {
@@ -99,9 +75,27 @@ public class UserDTO {
 		this.phoneNumber = phoneNumber;
 	}
 
-	@Override
-	public String toString() {
-		return "UserDTO [userId=" + userId + ", name=" + name + ", email=" + email + ", password=" + password
-				+ ", role=" + role + ", phoneNumber=" + phoneNumber + "]";
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public String getRefreshToken() {
+		return refreshToken;
+	}
+
+	public void setRefreshToken(String refreshToken) {
+		this.refreshToken = refreshToken;
+	}
+
+	public String getExpirationTime() {
+		return expirationTime;
+	}
+
+	public void setExpirationTime(String expirationTime) {
+		this.expirationTime = expirationTime;
 	}
 }

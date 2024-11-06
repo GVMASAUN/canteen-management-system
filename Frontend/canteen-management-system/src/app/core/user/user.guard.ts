@@ -1,39 +1,48 @@
-import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { inject, Injectable } from '@angular/core';
+import { ActivatedRouteSnapshot, CanActivate, CanActivateFn, Route, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
 import { UserService } from '../../services/user/user.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class UserGuard implements CanActivate {
-  constructor(private userService: UserService, private router: Router) { }
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+
+class UserPermissionService {
+  isValid: boolean = false;
+  constructor(private router: Router, private userService: UserService) { }
+
+  canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     if (this.userService.isAuthenticatedUser()) {
-      return true;
+      this.isValid = true;
     } else {
       this.router.navigate(['/login']);
     }
-    return false;
+    return this.isValid;
   }
+}
 
-};
+export const UserGuard: CanActivateFn = (next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean => {
+  return inject(UserPermissionService).canActivate(next, state);
+}
+
 @Injectable({
   providedIn: 'root'
 })
-export class AdminGuard implements CanActivate {
+
+class AdminPermissionService {
+  isValid: boolean = false;
   constructor(private userService: UserService, private router: Router) { }
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+
+  canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     if (this.userService.isAdminUser()) {
-      return true;
+      this.isValid = true;
     } else {
       this.router.navigate(['/login']);
     }
-    return false;
+    return this.isValid;
   }
+}
 
-};
+export const AdminGuard: CanActivateFn = (next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean => {
+  return inject(AdminPermissionService).canActivate(next, state);
+}

@@ -10,10 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.codeinsight.exercise.DTO.GenericResponseDTO;
 import com.codeinsight.exercise.DTO.OrderDTO;
-import com.codeinsight.exercise.DTO.OrderInformationDTO;
 import com.codeinsight.exercise.DTO.OrderItemDTO;
-import com.codeinsight.exercise.DTO.ResponseDTO;
 import com.codeinsight.exercise.entity.FoodItem;
 import com.codeinsight.exercise.entity.FoodOrder;
 import com.codeinsight.exercise.entity.OrderDetails;
@@ -35,8 +34,8 @@ public class FoodOrderServiceImpl implements FoodOrderService {
 	private UserRepository userRepository;
 
 	@Override
-	public ResponseDTO updateOrder(List<OrderItemDTO> orderItemDTO, Long orderId) {
-		ResponseDTO responseDTO = new ResponseDTO();
+	public GenericResponseDTO<OrderDTO> updateOrder(List<OrderItemDTO> orderItemDTO, Long orderId) {
+		GenericResponseDTO<OrderDTO> responseDTO = new GenericResponseDTO<OrderDTO>();
 
 		try {
 			Set<OrderDetails> orderDetails = createOrderDetails(orderItemDTO);
@@ -60,8 +59,8 @@ public class FoodOrderServiceImpl implements FoodOrderService {
 	}
 
 	@Override
-	public ResponseDTO storeOrderDetails(List<OrderItemDTO> orderItemDTO) {
-		ResponseDTO responseDTO = new ResponseDTO();
+	public GenericResponseDTO<OrderDTO> storeOrderDetails(List<OrderItemDTO> orderItemDTO) {
+		GenericResponseDTO<OrderDTO> responseDTO = new GenericResponseDTO<OrderDTO>();
 
 		try {
 			Set<OrderDetails> orderDetails = createOrderDetails(orderItemDTO);
@@ -106,32 +105,30 @@ public class FoodOrderServiceImpl implements FoodOrderService {
 		foodOrderRepository.save(foodOrder);
 	}
 
-	private OrderInformationDTO transferToOrderInformationDTO(FoodOrder foodOrder) {
-		OrderInformationDTO orderInformationDTO = new OrderInformationDTO();
-		orderInformationDTO.setEmail(foodOrder.getUser().getEmail());
-		orderInformationDTO.setName(foodOrder.getUser().getName());
-		orderInformationDTO.setUserId(foodOrder.getUser().getId());
-		orderInformationDTO.setTotalBill(foodOrder.getPrice());
-		orderInformationDTO.setOrderDate(foodOrder.getDate());
-		orderInformationDTO.setOrderDetails(foodOrder.getOrderDetails());
-
-		return orderInformationDTO;
-	}
-
 	@Override
-	public OrderInformationDTO getOrderDetails(long orderId) throws Exception {
-		FoodOrder foodOrder = foodOrderRepository.getReferenceById(orderId);
-
-		if (foodOrder == null) {
-			throw new Exception("No Food Order Exists with this id");
+	public GenericResponseDTO<OrderDTO> getOrderDetails(long orderId) {
+		GenericResponseDTO<OrderDTO> responseDTO = new GenericResponseDTO<OrderDTO>();
+		
+		try {
+			FoodOrder foodOrder = foodOrderRepository.getReferenceById(orderId);
+			OrderDTO orderDTO = populateOrderDTOFromFoodOrder(foodOrder);
+			
+			responseDTO.setData(orderDTO);
+			
+			responseDTO.setStatusCode(HttpStatus.OK.value());
+			responseDTO.setMessage("Order Fetched Successfully");
+			
+		} catch (Exception exception) {
+			responseDTO.setError("Error fetching orders: " + exception.getMessage());
+			responseDTO.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		}
-
-		return transferToOrderInformationDTO(foodOrder);
+		
+		return responseDTO;
 	}
 
 	@Override
-	public ResponseDTO getOrders() {
-		ResponseDTO responseDTO = new ResponseDTO();
+	public GenericResponseDTO<List<OrderDTO>> getCurrentUserOrders() {
+		GenericResponseDTO<List<OrderDTO>> responseDTO = new GenericResponseDTO<List<OrderDTO>>();
 		List<OrderDTO> ordersDTO = new ArrayList<OrderDTO>();
 
 		try {
@@ -139,15 +136,11 @@ public class FoodOrderServiceImpl implements FoodOrderService {
 			User fullUser = userRepository.getReferenceById(user.getId());
 
 			fullUser.getFoodOrders().forEach(order -> {
-				OrderDTO orderDTO = new OrderDTO(order.getOrderId(), order.getDate());
-				orderDTO.setOrderDetails(order.getOrderDetails());
-				orderDTO.setTotalPrice(order.getPrice());
-				orderDTO.setUserId(fullUser.getId());
-				orderDTO.setUserName(fullUser.getName());
+				OrderDTO orderDTO = populateOrderDTOFromFoodOrder(order);
 				ordersDTO.add(orderDTO);
 			});
 
-			responseDTO.setFoodOrders(ordersDTO);
+			responseDTO.setData(ordersDTO);
 
 			responseDTO.setStatusCode(HttpStatus.OK.value());
 			responseDTO.setMessage("Orders Fetched Successfully");
@@ -159,23 +152,19 @@ public class FoodOrderServiceImpl implements FoodOrderService {
 	}
 
 	@Override
-	public ResponseDTO getAllOrders() {
-		ResponseDTO responseDTO = new ResponseDTO();
+	public GenericResponseDTO<List<OrderDTO>> getAllOrders() {
+		GenericResponseDTO<List<OrderDTO>> responseDTO = new GenericResponseDTO<List<OrderDTO>>();
 		List<OrderDTO> ordersDTO = new ArrayList<OrderDTO>();
 
 		try {
 			List<FoodOrder> foodOrders = foodOrderRepository.findAll();
 
 			foodOrders.forEach(foodOrder -> {
-				OrderDTO orderDTO = new OrderDTO(foodOrder.getOrderId(), foodOrder.getDate());
-				orderDTO.setOrderDetails(foodOrder.getOrderDetails());
-				orderDTO.setTotalPrice(foodOrder.getPrice());
-				orderDTO.setUserId(foodOrder.getUser().getId());
-				orderDTO.setUserName(foodOrder.getUser().getName());
+				OrderDTO orderDTO = populateOrderDTOFromFoodOrder(foodOrder);
 				ordersDTO.add(orderDTO);
 			});
 
-			responseDTO.setFoodOrders(ordersDTO);
+			responseDTO.setData(ordersDTO);
 
 			responseDTO.setStatusCode(HttpStatus.OK.value());
 			responseDTO.setMessage("All orders Fetched Successfully");
@@ -183,6 +172,40 @@ public class FoodOrderServiceImpl implements FoodOrderService {
 			responseDTO.setError("Error fetching all orders: " + exception.getMessage());
 			responseDTO.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		}
+		return responseDTO;
+	}
+	
+	private OrderDTO populateOrderDTOFromFoodOrder(FoodOrder foodOrder) {
+		OrderDTO orderDTO = new OrderDTO(foodOrder.getOrderId(), foodOrder.getDate());
+		orderDTO.setOrderDetails(foodOrder.getOrderDetails());
+		orderDTO.setTotalPrice(foodOrder.getPrice());
+		orderDTO.setUserId(foodOrder.getUser().getId());
+		orderDTO.setUserName(foodOrder.getUser().getName());
+		
+		return orderDTO;
+	}
+
+	@Override
+	public GenericResponseDTO<List<OrderDTO>> getUserOrder(long userId) {
+		GenericResponseDTO<List<OrderDTO>> responseDTO = new GenericResponseDTO<List<OrderDTO>>();
+		List<OrderDTO> ordersDTO = new ArrayList<OrderDTO>();
+		try {
+			User user = userRepository.getReferenceById(userId);
+			
+			user.getFoodOrders().forEach(order -> {
+				OrderDTO orderDTO = populateOrderDTOFromFoodOrder(order);
+				ordersDTO.add(orderDTO);
+			});
+
+			responseDTO.setData(ordersDTO);
+			
+			responseDTO.setStatusCode(HttpStatus.OK.value());
+			responseDTO.setMessage("Orders Fetched Successfully");
+		} catch (Exception exception) {
+			responseDTO.setError("Error fetching orders: " + exception.getMessage());
+			responseDTO.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+		
 		return responseDTO;
 	}
 }

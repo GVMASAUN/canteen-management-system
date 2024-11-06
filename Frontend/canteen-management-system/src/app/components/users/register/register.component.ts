@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { User } from '../../../models/user';
 import { RegisterService } from '../../../services/user/register.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Role } from 'src/app/models/role';
+import { GenericResponseDTO } from 'src/app/models/generic-response-dto';
 
 @Component({
   selector: 'app-register',
@@ -11,27 +13,30 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
+  roles = Role;
   user: User;
   isEditing: boolean = false;
-  userId: any;
-  response: any;
+  userId: number;
+  response: GenericResponseDTO<User>;
 
   constructor(private formBuilder: FormBuilder, private registerService: RegisterService, private router: Router, private route: ActivatedRoute) {
     this.registerForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.pattern('^[a-zA-Z ]+$')]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
-      confirmPassword: ['', Validators.required],
+      confirmPassword: ['', [Validators.required, this.confirmPasswordValidator()]],
       role: ['', Validators.required],
       phoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]]
-    }, { validators: this.passwordMatchValidator });
+    });
   }
 
-  private passwordMatchValidator(form: FormGroup): { [key: string]: any } | null {
-    const password = form.get('password')?.value;
-    const confirmPassword = form.get('confirmPassword')?.value;
-
-    return password === confirmPassword ? null : { passwordMismatch: true };
+  private confirmPasswordValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const confirmationValue = control.value;
+      const passwordValue = this.registerForm?.get('password')?.value;
+      const isMatched = confirmationValue === passwordValue;
+      return isMatched ? null : { passwordMismatch: true };
+    }
   }
 
   private markAllAsTouched(): void {
@@ -41,16 +46,19 @@ export class RegisterComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.userId = this.route.snapshot.paramMap.get('id');
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.userId = parseInt(id);
+    }
     if (this.userId) {
       this.isEditing = true;
       this.loadUserData(this.userId);
     }
   }
 
-  loadUserData(userId: string): void {
+  loadUserData(userId: number): void {
     this.registerService.getUserById(userId).subscribe(response => {
-      this.user = response;
+      this.user = response.data;
       this.registerForm.patchValue({
         name: this.user.name,
         email: this.user.email,
@@ -69,19 +77,17 @@ export class RegisterComponent implements OnInit {
     const userData = this.registerForm.value;
 
     if (this.isEditing) {
-      this.registerService.updateUser(this.userId, userData).subscribe(resp => {
-        this.response = resp;
-        if (!this.response?.error) {
-          this.registerForm.reset();
-        }
+      this.registerService.updateUser(this.userId, userData).subscribe(response => {
+        this.response = response;
       });
     } else {
       this.registerService.registerUser(userData).subscribe(response => {
         this.response = response;
-        if (!this.response?.error) {
-          this.registerForm.reset();
-        }
       });
+    }
+
+    if (!this.response?.error) {
+      this.registerForm.reset();
     }
     this.router.navigate(['/users']);
   }

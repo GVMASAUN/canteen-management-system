@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { OrderService } from '../../../services/order/order.service';
 import { Router } from '@angular/router';
+import { FoodOrder } from 'src/app/models/food-order';
 
 @Component({
   selector: 'app-orders',
@@ -8,19 +9,17 @@ import { Router } from '@angular/router';
   styleUrls: ['./orders.component.css']
 })
 export class OrdersComponent implements OnInit {
-  orders: any[] = [];
+  orders: FoodOrder[] = [];
   constructor(private orderService: OrderService, private router: Router) { }
 
   ngOnInit(): void {
-    this.orderService.getOrders().subscribe(response => {
-      this.orders = response.foodOrders;
+    this.orderService.getOrder().subscribe(response => {
+      this.orders = response.data;
     });
   }
 
-  editOrder(order: any): void {
-    this.router.navigate(['/menu', order.orderId], {
-      state: { orderDetails: order.orderDetails }
-    });
+  editOrder(order: FoodOrder): void {
+    this.router.navigate(['/menu', order.orderId]);
   }
 
 }

@@ -42,7 +42,7 @@
                 *ngIf="registerForm.get('confirmPassword')?.hasError('required') && (registerForm.get('confirmPassword')?.touched || registerForm.get('confirmPassword')?.dirty)">
                 Confirm Password is required.</div>
             <div
-                *ngIf="registerForm.hasError('passwordMismatch') && (registerForm.get('confirmPassword')?.touched || registerForm.get('confirmPassword')?.dirty)">
+                *ngIf="registerForm.get('confirmPassword')?.hasError('passwordMismatch') && (registerForm.get('confirmPassword')?.touched || registerForm.get('confirmPassword')?.dirty)">
                 Passwords do not match.
             </div>
         </div>
@@ -51,8 +51,8 @@
     <div class="form-group">
         <label for="role">Role:</label>
         <select formControlName="role" id="role" required>
-            <option value="ROLE_USER">USER</option>
-            <option value="ROLE_ADMIN">ADMIN</option>
+            <option [value]="roles.User">USER</option>
+            <option [value]="roles.Admin">ADMIN</option>
         </select>
         <div *ngIf="registerForm.get('role')?.invalid && (registerForm.get('role')?.touched || registerForm.get('role')?.dirty)"
             class="error-message">

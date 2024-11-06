@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FoodItem } from 'src/app/models/food-item';
+import { GenericResponseDTO } from 'src/app/models/generic-response-dto';
 import { FoodItemsService } from 'src/app/services/food-item/food-items.service';
 
 @Component({
@@ -10,29 +11,30 @@ import { FoodItemsService } from 'src/app/services/food-item/food-items.service'
   styleUrls: ['./add-food-item.component.css']
 })
 export class AddFoodItemComponent implements OnInit {
+  private readonly ok: number = 200;
   foodItemForm: FormGroup;
   isEditing: boolean = false;
-  foodItemId: any;
-  response: any;
-  navigation: any;
+  foodItemId: number;
+  response: GenericResponseDTO<FoodItem>;
 
   constructor(private formBuilder: FormBuilder, private foodItemService: FoodItemsService, private router: Router, private route: ActivatedRoute) {
     this.foodItemForm = this.formBuilder.group({
       itemName: ['', Validators.required],
       itemPrice: ['', Validators.required]
     });
-    this.navigation = this.router.getCurrentNavigation();
   }
 
   ngOnInit(): void {
-    this.foodItemId = this.route.snapshot.paramMap.get('id');
-
-    if (this.navigation?.extras.state) {
-      const foodItem: FoodItem = this.navigation.extras.state['foodItem'];
-      if (foodItem) {
-        this.isEditing = true;
-        this.loadFoodItem(foodItem);
-      }
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.foodItemId = parseInt(id);
+      this.foodItemService.getFoodItem(this.foodItemId).subscribe(response => {
+        const foodItem: FoodItem = response.data;
+        if (foodItem) {
+          this.isEditing = true;
+          this.loadFoodItem(foodItem);
+        }
+      });
     }
   }
 
@@ -60,25 +62,19 @@ export class AddFoodItemComponent implements OnInit {
       const updatedItem: FoodItem = {
         itemId: this.isEditing ? this.foodItemId : 0,
         itemName: this.foodItemForm.controls['itemName'].value,
-        itemPrice: this.foodItemForm.controls['itemPrice'].value,
-        quantity: 0
+        itemPrice: this.foodItemForm.controls['itemPrice'].value
       };
 
       if (this.isEditing) {
         this.foodItemService.editFoodItem(updatedItem).subscribe(response => {
           this.response = response;
-          if (response.statusCode === 200) {
-            this.router.navigate(['/foodItems']);
-          }
         });
       } else {
         this.foodItemService.addFoodItem(updatedItem).subscribe(response => {
           this.response = response;
-          if (response.statusCode === 200) {
-            this.router.navigate(['/foodItems']);
-          }
         });
       }
+      this.router.navigate(['/foodItems']);
     }
   }
 }

@@ -9,16 +9,16 @@ import { User } from '../../../models/user';
   styleUrls: ['./order-filter.component.css']
 })
 export class OrderFilterComponent {
-  users: any[] = [];
-  selectedUser: string = 'all';
+  users: User[] = [];
+  selectedUser: string;
 
   @Output() filterChange = new EventEmitter<string>();
 
   constructor(private userService: UserService, private orderService: OrderService) { }
 
   ngOnInit(): void {
-    this.userService.getUsers().subscribe((response: User[]) => {
-      this.users = response;
+    this.userService.getUsers().subscribe(response => {
+      this.users = response.data;
     });
   }
 

@@ -1,6 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { GenericResponseDTO } from 'src/app/models/generic-response-dto';
+import { Role } from 'src/app/models/role';
+import { User } from 'src/app/models/user';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -8,11 +11,12 @@ import { environment } from 'src/environments/environment';
 })
 export class UserService {
   private apiUrl = environment.apiUrl;
+  private roles = Role;
   isAuthenticated: boolean = false;
   isAdmin: boolean = false;
   isSimpleUser: boolean = false;
 
-  constructor(private http: HttpClient) { }
+  constructor(private httpClient: HttpClient) { }
 
   isAuthenticatedUser(): boolean {
     let currentUserString: string | null = localStorage.getItem('currentUser');
@@ -29,7 +33,7 @@ export class UserService {
 
     if (currentUserString) {
       const currentUser = JSON.parse(currentUserString);
-      if (currentUser.role === 'ROLE_ADMIN') {
+      if (currentUser.role === this.roles.Admin) {
         this.isAdmin = true;
       }
     }
@@ -40,7 +44,7 @@ export class UserService {
     let currentUserString: string | null = localStorage.getItem('currentUser');
     if (currentUserString) {
       const currentUser = JSON.parse(currentUserString);
-      if (currentUser.role === 'ROLE_USER') {
+      if (currentUser.role === this.roles.User) {
         this.isSimpleUser = true;
       }
     }
@@ -53,11 +57,11 @@ export class UserService {
     }
   }
 
-  getUsers(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/user`);
+  getUsers(): Observable<GenericResponseDTO<User[]>> {
+    return this.httpClient.get<GenericResponseDTO<User[]>>(`${this.apiUrl}/users`);
   }
 
-  deleteUser(userId: number): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/user/${userId}`);
+  deleteUser(userId: number): Observable<GenericResponseDTO<User>> {
+    return this.httpClient.delete<GenericResponseDTO<User>>(`${this.apiUrl}/user/${userId}`);
   }
 }

@@ -3,7 +3,7 @@
     <div *ngFor="let order of orders" class="order-card">
         <div class="order-header">
             <h3>Order ID: {{ order?.orderId }}</h3>
-            <span class="order-date">{{ order?.date | date: 'medium' }}</span>
+            <span class="order-date">{{ order?.orderDate | date: 'medium' }}</span>
             <button class="edit-button" (click)="editOrder(order)">Edit</button>
         </div>
         <ul class="order-items">

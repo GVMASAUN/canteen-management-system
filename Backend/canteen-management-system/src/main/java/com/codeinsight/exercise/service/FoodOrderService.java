@@ -2,18 +2,20 @@ package com.codeinsight.exercise.service;
 
 import java.util.List;
 
-import com.codeinsight.exercise.DTO.OrderInformationDTO;
+import com.codeinsight.exercise.DTO.GenericResponseDTO;
+import com.codeinsight.exercise.DTO.OrderDTO;
 import com.codeinsight.exercise.DTO.OrderItemDTO;
-import com.codeinsight.exercise.DTO.ResponseDTO;
 
 public interface FoodOrderService {
-	ResponseDTO storeOrderDetails(List<OrderItemDTO> orderItemDTO);
+	public GenericResponseDTO<OrderDTO> storeOrderDetails(List<OrderItemDTO> orderItemDTO);
 
-	OrderInformationDTO getOrderDetails(long orderId) throws Exception;
+	public GenericResponseDTO<OrderDTO> getOrderDetails(long orderId) throws Exception;
 
-	ResponseDTO getOrders();
+	public GenericResponseDTO<List<OrderDTO>> getCurrentUserOrders();
 
-	ResponseDTO updateOrder(List<OrderItemDTO> orderItemDTO, Long orderId);
+	public GenericResponseDTO<OrderDTO> updateOrder(List<OrderItemDTO> orderItemDTO, Long orderId);
 
-	ResponseDTO getAllOrders();
+	public GenericResponseDTO<List<OrderDTO>> getAllOrders();
+
+	public GenericResponseDTO<List<OrderDTO>> getUserOrder(long userId);
 }

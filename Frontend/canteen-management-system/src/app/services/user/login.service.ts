@@ -4,12 +4,15 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { User } from '../../models/user';
 import { UserService } from './user.service';
 import { environment } from 'src/environments/environment';
+import { Role } from 'src/app/models/role';
+import { GenericResponseDTO } from 'src/app/models/generic-response-dto';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginService {
   private apiUrl = environment.apiUrl;
+  private roles = Role;
   private authenticated = new BehaviorSubject<boolean>(false);
   private admin = new BehaviorSubject<boolean>(false);
   private user = new BehaviorSubject<boolean>(false);
@@ -18,13 +21,13 @@ export class LoginService {
   isAdmin$ = this.admin.asObservable();
   isUser$ = this.user.asObservable();
 
-  constructor(private http: HttpClient, private userService: UserService) { }
+  constructor(private httpClient: HttpClient, private userService: UserService) { }
 
-  login(user: User): Observable<any> {
-    return this.http.post<User>(`${this.apiUrl}/login`, user).pipe(
+  login(user: User): Observable<GenericResponseDTO<User>> {
+    return this.httpClient.post<GenericResponseDTO<User>>(`${this.apiUrl}/login`, user).pipe(
       tap(response => {
-        const isAdmin = response.role === 'ROLE_ADMIN';
-        const isUser = response.role === 'ROLE_USER';
+        const isAdmin = response.data.role === this.roles.Admin;
+        const isUser = response.data.role === this.roles.User;
 
         this.authenticated.next(true);
         this.admin.next(isAdmin);

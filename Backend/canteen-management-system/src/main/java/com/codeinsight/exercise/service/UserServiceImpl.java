@@ -16,7 +16,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.codeinsight.exercise.DTO.ResponseDTO;
+import com.codeinsight.exercise.DTO.GenericResponseDTO;
 import com.codeinsight.exercise.DTO.UserDTO;
 import com.codeinsight.exercise.entity.User;
 import com.codeinsight.exercise.repository.UserRepository;
@@ -25,10 +25,10 @@ import com.codeinsight.exercise.repository.UserRepository;
 public class UserServiceImpl implements UserService, UserDetailsService {
 
 	@Autowired
-	UserRepository userRepository;
+	private UserRepository userRepository;
 
 	@Autowired
-	JwtService jwtService;
+	private JwtService jwtService;
 
 	public User getCurrentUser() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -49,8 +49,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	}
 
 	@Override
-	public ResponseDTO registerUser(UserDTO userDTO, PasswordEncoder passwordEncoder) {
-		ResponseDTO responseDTO = new ResponseDTO();
+	public GenericResponseDTO<UserDTO> registerUser(UserDTO userDTO, PasswordEncoder passwordEncoder) {
+		GenericResponseDTO<UserDTO> responseDTO = new GenericResponseDTO<UserDTO>();
 
 		try {
 			User user = new User();
@@ -79,51 +79,61 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	}
 
 	@Override
-	public ResponseDTO login(UserDTO userDTO, AuthenticationManager authenticationManager) {
-		ResponseDTO responseDTO = new ResponseDTO();
+	public GenericResponseDTO<UserDTO> login(UserDTO userLoginDTO, AuthenticationManager authenticationManager) {
+		GenericResponseDTO<UserDTO> responseDTO = new GenericResponseDTO<UserDTO>();
+		UserDTO userDTO = new UserDTO();
 
 		try {
 			authenticationManager
-					.authenticate(new UsernamePasswordAuthenticationToken(userDTO.getEmail(), userDTO.getPassword()));
-			User user = userRepository.findUserByEmail(userDTO.getEmail()).orElseThrow();
+					.authenticate(new UsernamePasswordAuthenticationToken(userLoginDTO.getEmail(), userLoginDTO.getPassword()));
+			User user = userRepository.findUserByEmail(userLoginDTO.getEmail()).orElseThrow();
 			String token = jwtService.generateToken(user);
 			String refreshToken = jwtService.generateRefreshToken(new HashMap<String, Object>(), user);
 
-			responseDTO.setToken(token);
-			responseDTO.setRefreshToken(refreshToken);
-			responseDTO.setRole(user.getRole());
+			userDTO.setToken(token);
+			userDTO.setRefreshToken(refreshToken);
+			userDTO.setRole(user.getRole());
+			userDTO.setExpirationTime("24Hrs");
+
+			
+			responseDTO.setData(userDTO);
+			
 			responseDTO.setMessage("Successfully Logged In");
-			responseDTO.setExpirationTime("24Hrs");
 			responseDTO.setStatusCode(HttpStatus.OK.value());
 		} catch (Exception exception) {
 			responseDTO.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
 			responseDTO.setError("Error logging in: " + exception.getMessage());
 		}
-
 		return responseDTO;
 	}
 
 	@Override
-	public List<UserDTO> getUsers() {
-		List<User> users = userRepository.findAll();
+	public GenericResponseDTO<List<UserDTO>> getUsers() {
+		GenericResponseDTO<List<UserDTO>> responseDTO = new GenericResponseDTO<List<UserDTO>>();
 		List<UserDTO> usersDTO = new ArrayList<UserDTO>();
-
 		try {
+			List<User> users = userRepository.findAll();
+
 			users.forEach(user -> {
 				UserDTO userDTO = new UserDTO(user.getRole(), user.getId(), user.getEmail(), user.getName(),
 						user.getPhoneNumber());
-				userDTO.setStatusCode(HttpStatus.OK.value());
 				usersDTO.add(userDTO);
 			});
+			
+			responseDTO.setData(usersDTO);
+			
+			responseDTO.setMessage("Users fetched successfully");
+			responseDTO.setStatusCode(HttpStatus.OK.value());
 		} catch (Exception exception) {
-			exception.printStackTrace();
+			responseDTO.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			responseDTO.setError("Error fetching users: " + exception.getMessage());
 		}
-		return usersDTO;
+		return responseDTO;
 	}
 
 	@Override
-	public ResponseDTO updateUser(Long userId, UserDTO userDTO, PasswordEncoder passwordEncoder) {
-		ResponseDTO responseDTO = new ResponseDTO();
+	public GenericResponseDTO<UserDTO> updateUser(Long userId, UserDTO userDTO, PasswordEncoder passwordEncoder) {
+		GenericResponseDTO<UserDTO> responseDTO = new GenericResponseDTO<UserDTO>();
 
 		try {
 			User user = userRepository.getReferenceById(userId);
@@ -145,8 +155,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	}
 
 	@Override
-	public ResponseDTO deleteUser(Long userId) {
-		ResponseDTO responseDTO = new ResponseDTO();
+	public GenericResponseDTO<UserDTO> deleteUser(Long userId) {
+		GenericResponseDTO<UserDTO> responseDTO = new GenericResponseDTO<UserDTO>();
 
 		try {
 			User user = userRepository.getReferenceById(userId);
@@ -162,7 +172,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	}
 
 	@Override
-	public UserDTO getUserById(Long userId) {
+	public GenericResponseDTO<UserDTO> getUserById(Long userId) {
+		GenericResponseDTO<UserDTO> responseDTO = new GenericResponseDTO<UserDTO>();
 		UserDTO userDTO = new UserDTO();
 
 		try {
@@ -172,14 +183,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 			userDTO.setEmail(user.getEmail());
 			userDTO.setRole(user.getRole());
 			userDTO.setPhoneNumber(user.getPhoneNumber());
+			
+			responseDTO.setData(userDTO);
 
-			userDTO.setStatusCode(HttpStatus.OK.value());
-			userDTO.setMessage("User Fetched");
+			responseDTO.setStatusCode(HttpStatus.OK.value());
+			responseDTO.setMessage("User Fetched");
 		} catch (Exception exception) {
-			userDTO.setError("Error fetching user: " + exception.getMessage());
-			userDTO.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			responseDTO.setError("Error fetching user: " + exception.getMessage());
+			responseDTO.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		}
 
-		return userDTO;
+		return responseDTO;
 	}
 }

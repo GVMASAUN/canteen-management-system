@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { OrderService } from '../../../services/order/order.service';
 import { filter } from 'rxjs';
+import { FoodOrder } from 'src/app/models/food-order';
+import { GenericResponseDTO } from 'src/app/models/generic-response-dto';
 
 @Component({
   selector: 'app-all-orders',
@@ -8,15 +10,16 @@ import { filter } from 'rxjs';
   styleUrls: ['./all-orders.component.css']
 })
 export class AllOrdersComponent implements OnInit {
-  @Input() selectedUser: string = 'all';
-  orders: any[] = [];
-  filteredOrders: any[] = [];
+  @Input() selectedUser: string;
+  orders: FoodOrder[] = [];
+  filteredOrders: FoodOrder[] = [];
+  response: GenericResponseDTO<FoodOrder[]>;
 
   constructor(private orderService: OrderService) { }
 
   ngOnInit(): void {
     this.orderService.getAllOrders().subscribe(response => {
-      this.orders = response.foodOrders;
+      this.orders = response.data;
       this.filterOrders(this.selectedUser);
     });
   }
@@ -29,7 +32,16 @@ export class AllOrdersComponent implements OnInit {
     if (selectedUser === 'all') {
       this.filteredOrders = this.orders;
     } else {
-      this.filteredOrders = this.orders.filter(order => order.userId == selectedUser);
+      this.orderService.getSpecificUserOrder(parseInt(selectedUser, 10)).subscribe(response => {
+        this.response = response;
+        this.filteredOrders = response.data;
+
+        if (!this.filteredOrders.length) {
+          this.response.message = `No orders for this User`;
+        } else {
+          this.response.message = ``;
+        }
+      });
     }
   }
 }

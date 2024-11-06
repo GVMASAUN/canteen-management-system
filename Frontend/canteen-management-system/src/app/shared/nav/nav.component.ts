@@ -1,5 +1,6 @@
 import { AfterViewChecked, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Role } from 'src/app/models/role';
 import { LoginService } from 'src/app/services/user/login.service';
 
 @Component({
@@ -9,6 +10,7 @@ import { LoginService } from 'src/app/services/user/login.service';
 })
 export class NavComponent {
   isAuthenticated: boolean = false;
+  private roles = Role;
   isAdmin: boolean = false;
   isUser: boolean = false;
   constructor(private loginService: LoginService, private router: Router) { }
@@ -28,8 +30,8 @@ export class NavComponent {
   loadUserState(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     this.isAuthenticated = !!currentUser.token;
-    this.isAdmin = currentUser.role === 'ROLE_ADMIN';
-    this.isUser = currentUser.role === 'ROLE_USER';
+    this.isAdmin = currentUser.role === this.roles.Admin;
+    this.isUser = currentUser.role === this.roles.User;
   }
 
   logout(): void {

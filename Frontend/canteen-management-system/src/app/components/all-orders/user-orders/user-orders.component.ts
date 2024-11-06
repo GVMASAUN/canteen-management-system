@@ -6,7 +6,8 @@ import { Component } from '@angular/core';
   styleUrls: ['./user-orders.component.css']
 })
 export class UserOrdersComponent {
-  selectedUser: string = 'all';
+  private readonly ALL: string = "all";
+  selectedUser: string = this.ALL;
 
   onUserChange(userId: string): void {
     this.selectedUser = userId;

@@ -1,14 +1,17 @@
 package com.codeinsight.exercise.service;
 
+import java.util.List;
+
 import com.codeinsight.exercise.DTO.FoodItemDTO;
-import com.codeinsight.exercise.DTO.ResponseDTO;
+import com.codeinsight.exercise.DTO.GenericResponseDTO;
+import com.codeinsight.exercise.entity.FoodItem;
 
 public interface FoodItemService {
-	ResponseDTO createFoodItem(FoodItemDTO foodItemDTO);
+	public GenericResponseDTO<FoodItem> createFoodItem(FoodItemDTO foodItemDTO);
 
-	ResponseDTO updateItem(FoodItemDTO foodItemDTO);
+	public GenericResponseDTO<FoodItem> updateItem(FoodItemDTO foodItemDTO);
 
-	ResponseDTO getAllFoodItems();
+	public GenericResponseDTO<List<FoodItem>> getAllFoodItems();
 
-	ResponseDTO deleteItem(Long id);
+	public GenericResponseDTO<FoodItem> getFoodItem(long itemId);
 }

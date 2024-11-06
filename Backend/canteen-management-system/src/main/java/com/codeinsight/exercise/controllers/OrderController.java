@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.codeinsight.exercise.DTO.OrderInformationDTO;
+import com.codeinsight.exercise.DTO.GenericResponseDTO;
+import com.codeinsight.exercise.DTO.OrderDTO;
 import com.codeinsight.exercise.DTO.OrderItemDTO;
-import com.codeinsight.exercise.DTO.ResponseDTO;
 import com.codeinsight.exercise.service.FoodOrderService;
 
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,33 +25,32 @@ public class OrderController {
 	private FoodOrderService foodOrderService;
 
 	@PostMapping("/order")
-	public ResponseEntity<ResponseDTO> placeOrder(@RequestBody List<OrderItemDTO> orderItemDTO) {
+	public ResponseEntity<GenericResponseDTO<OrderDTO>> placeOrder(@RequestBody List<OrderItemDTO> orderItemDTO) {
 		return ResponseEntity.ok(foodOrderService.storeOrderDetails(orderItemDTO));
 	}
 
 	@GetMapping("/order/{id}")
-	public OrderInformationDTO putMethodName(@PathVariable String id) throws Exception{
-		OrderInformationDTO orderInforamtionDTO = null;
-		try {
-			orderInforamtionDTO = foodOrderService.getOrderDetails(Long.parseLong(id));
-		} catch (Exception exception) {
-			return null;
-		}
-		return orderInforamtionDTO;
+	public ResponseEntity<GenericResponseDTO<OrderDTO>> getOrderDetails(@PathVariable String id) throws Exception{
+		return ResponseEntity.ok(foodOrderService.getOrderDetails(Long.parseLong(id)));
 	}
 	
 	@GetMapping("/user/order")
-	public ResponseEntity<ResponseDTO> getCurrentUserOrder() {
-		return ResponseEntity.ok(foodOrderService.getOrders());
+	public ResponseEntity<GenericResponseDTO<List<OrderDTO>>> getCurrentUserOrders() {
+		return ResponseEntity.ok(foodOrderService.getCurrentUserOrders());
 	}
 	
-	@GetMapping("/user/orders")
-	public ResponseEntity<ResponseDTO> getAllOrders() {
+	@GetMapping("/user/order/{id}")
+	public ResponseEntity<GenericResponseDTO<List<OrderDTO>>> getUserOrder(@PathVariable String id){
+		return ResponseEntity.ok(foodOrderService.getUserOrder(Long.parseLong(id)));
+	}
+	
+	@GetMapping("/orders")
+	public ResponseEntity<GenericResponseDTO<List<OrderDTO>>> getAllOrders() {
 		return ResponseEntity.ok(foodOrderService.getAllOrders());
 	}
 	
 	@PutMapping("order/{id}")
-	public ResponseEntity<ResponseDTO> updateUserOrder(@PathVariable String id, @RequestBody List<OrderItemDTO> orderItemDTO) {
+	public ResponseEntity<GenericResponseDTO<OrderDTO>> updateUserOrder(@PathVariable String id, @RequestBody List<OrderItemDTO> orderItemDTO) {
 		return ResponseEntity.ok(foodOrderService.updateOrder(orderItemDTO,Long.parseLong(id)));
 	}
 }
