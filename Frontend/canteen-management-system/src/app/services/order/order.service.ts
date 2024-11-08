@@ -1,40 +1,42 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { FoodOrder } from 'src/app/models/food-order';
-import { GenericResponseDTO } from 'src/app/models/generic-response-dto';
-import { UserOrder } from 'src/app/models/user-order';
+import { IFoodOrder } from 'src/app/models/food-order';
+import { IGenericResponse } from 'src/app/models/generic-response-dto';
+import { IUserOrder } from 'src/app/models/user-order';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OrderService {
-  private apiUrl = environment.apiUrl;
+  private readonly apiUrl = environment.apiUrl;
+  private readonly paramKey: string = "selectedUser";
 
-  constructor(private httpClient: HttpClient) { }
+  public constructor(private httpClient: HttpClient) { }
 
-  getOrderDetail(orderId: number): Observable<GenericResponseDTO<FoodOrder>> {
-    return this.httpClient.get<GenericResponseDTO<FoodOrder>>(`${this.apiUrl}/order/${orderId}`);
+  public getOrderDetail(orderId: number): Observable<IGenericResponse<IFoodOrder>> {
+    return this.httpClient.get<IGenericResponse<IFoodOrder>>(`${this.apiUrl}/order/${orderId}`);
   }
 
-  getOrder(): Observable<GenericResponseDTO<FoodOrder[]>> {
-    return this.httpClient.get<GenericResponseDTO<FoodOrder[]>>(`${this.apiUrl}/user/order`);
+  public getOrder(): Observable<IGenericResponse<IFoodOrder[]>> {
+    return this.httpClient.get<IGenericResponse<IFoodOrder[]>>(`${this.apiUrl}/order/user`);
   }
 
-  getAllOrders(): Observable<GenericResponseDTO<FoodOrder[]>> {
-    return this.httpClient.get<GenericResponseDTO<FoodOrder[]>>(`${this.apiUrl}/orders`);
+  public getAllOrders(): Observable<IGenericResponse<IFoodOrder[]>> {
+    return this.httpClient.get<IGenericResponse<IFoodOrder[]>>(`${this.apiUrl}/orders`);
   }
 
-  getSpecificUserOrder(userId: number): Observable<GenericResponseDTO<FoodOrder[]>> {
-    return this.httpClient.get<GenericResponseDTO<FoodOrder[]>>(`${this.apiUrl}/user/order/${userId}`);
+  public getUserOrder(selectedUser: string): Observable<IGenericResponse<IFoodOrder[]>> {
+    const params = new HttpParams().set(this.paramKey, selectedUser);
+    return this.httpClient.get<IGenericResponse<IFoodOrder[]>>(`${this.apiUrl}/order`, { params });
   }
 
-  updateOrder(orderId: number, userOrder: UserOrder[]): Observable<GenericResponseDTO<FoodOrder>> {
-    return this.httpClient.put<GenericResponseDTO<FoodOrder>>(`${this.apiUrl}/order/${orderId}`, userOrder);
+  public updateOrder(orderId: number, userOrder: IUserOrder[]): Observable<IGenericResponse<IFoodOrder>> {
+    return this.httpClient.put<IGenericResponse<IFoodOrder>>(`${this.apiUrl}/order/${orderId}`, userOrder);
   }
 
-  placeOrder(userOrder: UserOrder[]): Observable<GenericResponseDTO<FoodOrder>> {
-    return this.httpClient.post<GenericResponseDTO<FoodOrder>>(`${this.apiUrl}/order`, userOrder);
+  public placeOrder(userOrder: IUserOrder[]): Observable<IGenericResponse<IFoodOrder>> {
+    return this.httpClient.post<IGenericResponse<IFoodOrder>>(`${this.apiUrl}/order`, userOrder);
   }
 }

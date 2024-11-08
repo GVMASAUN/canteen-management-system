@@ -1,6 +1,5 @@
 import { inject, Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, CanActivateFn, Route, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
-import { Observable } from 'rxjs';
 import { UserService } from '../../services/user/user.service';
 
 @Injectable({
@@ -8,7 +7,7 @@ import { UserService } from '../../services/user/user.service';
 })
 
 class UserPermissionService {
-  isValid: boolean = false;
+  private isValid: boolean = false;
   constructor(private router: Router, private userService: UserService) { }
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
@@ -30,7 +29,7 @@ export const UserGuard: CanActivateFn = (next: ActivatedRouteSnapshot, state: Ro
 })
 
 class AdminPermissionService {
-  isValid: boolean = false;
+  private isValid: boolean = false;
   constructor(private userService: UserService, private router: Router) { }
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {

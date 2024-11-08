@@ -1,6 +1,7 @@
 <div class="food-items-container">
     <h2>Food Items</h2>
-    <button class="add-item-button" routerLink="add">Add Item</button>
+    <p *ngIf="response?.error">{{response.error}}</p>
+    <button class="add-item-button" (click)="addAndEdit()">Add Item</button>
 
     <p *ngIf="response?.error">{{response.error}}</p>
     <div class="food-item" *ngFor="let foodItem of foodItems">

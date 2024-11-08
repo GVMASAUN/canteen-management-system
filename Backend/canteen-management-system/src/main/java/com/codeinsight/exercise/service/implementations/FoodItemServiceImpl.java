@@ -1,4 +1,4 @@
-package com.codeinsight.exercise.service;
+package com.codeinsight.exercise.service.implementations;
 
 import java.util.List;
 
@@ -10,6 +10,9 @@ import com.codeinsight.exercise.DTO.FoodItemDTO;
 import com.codeinsight.exercise.DTO.GenericResponseDTO;
 import com.codeinsight.exercise.entity.FoodItem;
 import com.codeinsight.exercise.repository.FoodItemRepository;
+import com.codeinsight.exercise.service.FoodItemService;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class FoodItemServiceImpl implements FoodItemService {
@@ -18,6 +21,7 @@ public class FoodItemServiceImpl implements FoodItemService {
 	private FoodItemRepository foodItemRepository;
 
 	@Override
+	@Transactional
 	public GenericResponseDTO<FoodItem> createFoodItem(FoodItemDTO foodItemDTO) {
 		GenericResponseDTO<FoodItem> responseDTO = new GenericResponseDTO<FoodItem>();
 		try {
@@ -25,7 +29,7 @@ public class FoodItemServiceImpl implements FoodItemService {
 			foodItem.setItemName(foodItemDTO.getItemName());
 			foodItem.setItemPrice(foodItemDTO.getItemPrice());
 
-			this.saveFoodItem(foodItem);
+			foodItemRepository.save(foodItem);
 
 			responseDTO.setMessage("Item Added Successfully");
 			responseDTO.setStatusCode(HttpStatus.CREATED.value());
@@ -36,11 +40,8 @@ public class FoodItemServiceImpl implements FoodItemService {
 		return responseDTO;
 	}
 
-	private void saveFoodItem(FoodItem foodItem) {
-		foodItemRepository.save(foodItem);
-	}
-
 	@Override
+	@Transactional
 	public GenericResponseDTO<FoodItem> updateItem(FoodItemDTO foodItemDTO) {
 		GenericResponseDTO<FoodItem> responseDTO = new GenericResponseDTO<FoodItem>();
 		try {
@@ -60,6 +61,7 @@ public class FoodItemServiceImpl implements FoodItemService {
 	}
 
 	@Override
+	@Transactional
 	public GenericResponseDTO<List<FoodItem>> getAllFoodItems() {
 		GenericResponseDTO<List<FoodItem>> genericResponse = new GenericResponseDTO<List<FoodItem>>();
 		try {
@@ -75,13 +77,18 @@ public class FoodItemServiceImpl implements FoodItemService {
 	}
 
 	@Override
-	public GenericResponseDTO<FoodItem> getFoodItem(long itemId) {
-		GenericResponseDTO<FoodItem> responseDTO = new GenericResponseDTO<FoodItem>();
+	@Transactional
+	public GenericResponseDTO<FoodItemDTO> getFoodItem(long itemId) {
+		GenericResponseDTO<FoodItemDTO> responseDTO = new GenericResponseDTO<FoodItemDTO>();
 		
 		try {
 			FoodItem foodItem = foodItemRepository.getReferenceById(itemId);
+			FoodItemDTO foodItemDTO = new FoodItemDTO();
+			foodItemDTO.setItemId(foodItem.getItemId());
+			foodItemDTO.setItemName(foodItem.getItemName());
+			foodItemDTO.setItemPrice(foodItem.getItemPrice());
 
-			responseDTO.setData(foodItem);
+			responseDTO.setData(foodItemDTO);
 			
 			responseDTO.setMessage("Item Fetched Successfully");
 			responseDTO.setStatusCode(HttpStatus.OK.value());

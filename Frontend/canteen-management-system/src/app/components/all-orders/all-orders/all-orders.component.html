@@ -1,5 +1,4 @@
 <div class="order-container">
-    <h2>User Orders</h2>
     <p *ngIf="response?.message">{{response.message}}</p>
     <p *ngIf="response?.error">{{response.error}}</p>
     <div *ngFor="let order of filteredOrders" class="order-card">

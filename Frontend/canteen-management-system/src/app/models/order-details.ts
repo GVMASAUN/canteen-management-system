@@ -1,7 +1,7 @@
-import { FoodItem } from "./food-item";
+import { IFoodItem } from "./food-item";
 
-export interface OrderDetails {
-    foodItem: FoodItem;
+export interface IOrderDetails {
+    foodItem: IFoodItem;
     id: number;
     quantity: number;
     totalPrice: number;

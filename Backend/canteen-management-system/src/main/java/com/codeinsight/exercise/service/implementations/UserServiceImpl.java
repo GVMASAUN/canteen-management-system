@@ -1,4 +1,4 @@
-package com.codeinsight.exercise.service;
+package com.codeinsight.exercise.service.implementations;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +20,9 @@ import com.codeinsight.exercise.DTO.GenericResponseDTO;
 import com.codeinsight.exercise.DTO.UserDTO;
 import com.codeinsight.exercise.entity.User;
 import com.codeinsight.exercise.repository.UserRepository;
+import com.codeinsight.exercise.service.UserService;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
@@ -28,7 +31,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	private UserRepository userRepository;
 
 	@Autowired
-	private JwtService jwtService;
+	private JwtServiceImpl jwtService;
 
 	public User getCurrentUser() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -42,6 +45,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	}
 
 	@Override
+	@Transactional
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User user = userRepository.findUserByEmail(username)
 				.orElseThrow(() -> new UsernameNotFoundException("User not present"));
@@ -49,6 +53,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	}
 
 	@Override
+	@Transactional
 	public GenericResponseDTO<UserDTO> registerUser(UserDTO userDTO, PasswordEncoder passwordEncoder) {
 		GenericResponseDTO<UserDTO> responseDTO = new GenericResponseDTO<UserDTO>();
 
@@ -61,7 +66,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 			String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
 			user.setPassword(encodedPassword);
 
-			User userResult = this.saveUser(user);
+			User userResult = userRepository.save(user);
 
 			if (userResult.getId() > 0) {
 				responseDTO.setStatusCode(HttpStatus.OK.value());
@@ -72,10 +77,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 			responseDTO.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		}
 		return responseDTO;
-	}
-
-	private User saveUser(UserDetails user) {
-		return userRepository.save((User) user);
 	}
 
 	@Override
@@ -108,6 +109,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	}
 
 	@Override
+	@Transactional
 	public GenericResponseDTO<List<UserDTO>> getUsers() {
 		GenericResponseDTO<List<UserDTO>> responseDTO = new GenericResponseDTO<List<UserDTO>>();
 		List<UserDTO> usersDTO = new ArrayList<UserDTO>();
@@ -132,6 +134,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	}
 
 	@Override
+	@Transactional
 	public GenericResponseDTO<UserDTO> updateUser(Long userId, UserDTO userDTO, PasswordEncoder passwordEncoder) {
 		GenericResponseDTO<UserDTO> responseDTO = new GenericResponseDTO<UserDTO>();
 
@@ -142,7 +145,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 			user.setEmail(userDTO.getEmail());
 			user.setRole(userDTO.getRole());
 			user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-			this.saveUser(user);
+			userRepository.save(user);
 
 			responseDTO.setMessage("User updated successfully");
 			responseDTO.setStatusCode(HttpStatus.OK.value());
@@ -155,6 +158,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	}
 
 	@Override
+	@Transactional
 	public GenericResponseDTO<UserDTO> deleteUser(Long userId) {
 		GenericResponseDTO<UserDTO> responseDTO = new GenericResponseDTO<UserDTO>();
 
@@ -172,6 +176,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	}
 
 	@Override
+	@Transactional
 	public GenericResponseDTO<UserDTO> getUserById(Long userId) {
 		GenericResponseDTO<UserDTO> responseDTO = new GenericResponseDTO<UserDTO>();
 		UserDTO userDTO = new UserDTO();

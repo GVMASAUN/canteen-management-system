@@ -29,7 +29,6 @@ public class UserController {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-
 	@PostMapping("/login")
 	public ResponseEntity<GenericResponseDTO<UserDTO>> login(@RequestBody UserDTO userDTO) {
 		return ResponseEntity.ok(userService.login(userDTO, authenticationManager));
@@ -40,12 +39,12 @@ public class UserController {
 		return ResponseEntity.ok(userService.registerUser(userDTO, passwordEncoder));
 	}
 	
-	@GetMapping("/users")
+	@GetMapping("/user")
 	public ResponseEntity<GenericResponseDTO<List<UserDTO>>> getUsers() {
 		return ResponseEntity.ok(userService.getUsers());
 	}
 	
-	@PutMapping("user/{id}")
+	@PutMapping("/user/{id}")
 	public ResponseEntity<GenericResponseDTO<UserDTO>> updateUser(@PathVariable String id, @RequestBody UserDTO userDTO) {		
 		return ResponseEntity.ok(userService.updateUser(Long.parseLong(id),userDTO,passwordEncoder));
 	}

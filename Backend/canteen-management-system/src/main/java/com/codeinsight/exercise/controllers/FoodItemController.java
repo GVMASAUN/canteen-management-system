@@ -30,7 +30,7 @@ public class FoodItemController{
 	}
 	
 	@GetMapping("/item/{id}")
-	public ResponseEntity<GenericResponseDTO<FoodItem>> getFoodItem(@PathVariable String id){
+	public ResponseEntity<GenericResponseDTO<FoodItemDTO>> getFoodItem(@PathVariable String id){
 		return ResponseEntity.ok(foodItemService.getFoodItem(Long.parseLong(id)));
 	}
 	

@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
-import { User } from '../../../models/user';
+import { IUser } from '../../../models/user';
 import { RegisterService } from '../../../services/user/register.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Role } from 'src/app/models/role';
-import { GenericResponseDTO } from 'src/app/models/generic-response-dto';
+import { IGenericResponse } from 'src/app/models/generic-response-dto';
 
 @Component({
   selector: 'app-register',
@@ -12,21 +12,23 @@ import { GenericResponseDTO } from 'src/app/models/generic-response-dto';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
-  registerForm: FormGroup;
-  roles = Role;
-  user: User;
-  isEditing: boolean = false;
-  userId: number;
-  response: GenericResponseDTO<User>;
+  public registerForm: FormGroup;
+  private readonly NAME_PATTERN: string = '^[a-zA-Z ]+$';
+  private readonly PHONE_PATTERN: string = '^[0-9]{10}$';
+  public roles = Role;
+  private user: IUser;
+  public isEditing: boolean = false;
+  private userId: number;
+  public response: IGenericResponse<IUser>;
 
-  constructor(private formBuilder: FormBuilder, private registerService: RegisterService, private router: Router, private route: ActivatedRoute) {
+  public constructor(private formBuilder: FormBuilder, private registerService: RegisterService, private router: Router, private route: ActivatedRoute) {
     this.registerForm = this.formBuilder.group({
-      name: ['', [Validators.required, Validators.pattern('^[a-zA-Z ]+$')]],
+      name: ['', [Validators.required, Validators.pattern(this.NAME_PATTERN)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
       confirmPassword: ['', [Validators.required, this.confirmPasswordValidator()]],
       role: ['', Validators.required],
-      phoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]]
+      phoneNumber: ['', [Validators.required, Validators.pattern(this.PHONE_PATTERN)]]
     });
   }
 
@@ -45,7 +47,7 @@ export class RegisterComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.userId = parseInt(id);
@@ -56,7 +58,7 @@ export class RegisterComponent implements OnInit {
     }
   }
 
-  loadUserData(userId: number): void {
+  private loadUserData(userId: number): void {
     this.registerService.getUserById(userId).subscribe(response => {
       this.user = response.data;
       this.registerForm.patchValue({
@@ -66,6 +68,10 @@ export class RegisterComponent implements OnInit {
         phoneNumber: this.user.phoneNumber,
       });
     });
+  }
+
+  private navigateToUsers(): void {
+    this.router.navigate(['/users']);
   }
 
   registerUser(): void {
@@ -79,16 +85,17 @@ export class RegisterComponent implements OnInit {
     if (this.isEditing) {
       this.registerService.updateUser(this.userId, userData).subscribe(response => {
         this.response = response;
+        this.navigateToUsers();
       });
     } else {
       this.registerService.registerUser(userData).subscribe(response => {
         this.response = response;
+        this.navigateToUsers();
       });
     }
 
     if (!this.response?.error) {
       this.registerForm.reset();
     }
-    this.router.navigate(['/users']);
   }
 }

@@ -1,11 +1,11 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FoodItem } from 'src/app/models/food-item';
-import { FoodOrder } from 'src/app/models/food-order';
-import { GenericResponseDTO } from 'src/app/models/generic-response-dto';
-import { OrderDetails } from 'src/app/models/order-details';
-import { UserOrder } from 'src/app/models/user-order';
+import { IFoodItem } from 'src/app/models/food-item';
+import { IFoodOrder } from 'src/app/models/food-order';
+import { IGenericResponse } from 'src/app/models/generic-response-dto';
+import { IOrderDetails } from 'src/app/models/order-details';
+import { IUserOrder } from 'src/app/models/user-order';
 import { FoodItemsService } from 'src/app/services/food-item/food-items.service';
 import { OrderService } from 'src/app/services/order/order.service';
 
@@ -15,16 +15,16 @@ import { OrderService } from 'src/app/services/order/order.service';
   styleUrls: ['./menu.component.css']
 })
 export class MenuComponent implements OnInit {
-  foodItems: FoodItem[] = [];
-  userOrder: UserOrder[] = [];
-  response: GenericResponseDTO<FoodOrder>;
-  orderId: number;
-  isEditing: boolean = false;
+  public foodItems: IFoodItem[] = [];
+  public userOrder: IUserOrder[] = [];
+  public response: IGenericResponse<IFoodOrder>;
+  private orderId: number;
+  public isEditing: boolean = false;
 
-  constructor(private orderService: OrderService, private foodItemsService: FoodItemsService, private route: ActivatedRoute, private router: Router, private location: Location) {
+  public constructor(private orderService: OrderService, private foodItemsService: FoodItemsService, private route: ActivatedRoute, private router: Router, private location: Location) {
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.foodItemsService.getFoodItems().subscribe(response => {
       this.foodItems = response.data;
     });
@@ -47,7 +47,7 @@ export class MenuComponent implements OnInit {
     }
   }
 
-  loadOrderDetails(orderDetails: OrderDetails[]): void {
+  private loadOrderDetails(orderDetails: IOrderDetails[]): void {
     this.userOrder = orderDetails.map(item => ({
       itemId: item.foodItem.itemId,
       itemName: item.foodItem.itemName,
@@ -55,7 +55,7 @@ export class MenuComponent implements OnInit {
     }));
   }
 
-  addItem(itemId: number): void {
+  public addItem(itemId: number): void {
     const foodItem = this.foodItems.find(item => item.itemId === itemId);
     if (!foodItem) {
       return;
@@ -69,7 +69,7 @@ export class MenuComponent implements OnInit {
     }
   }
 
-  removeItem(itemId: number): void {
+  public removeItem(itemId: number): void {
     const existingOrder = this.userOrder.find(order => order.itemId === itemId);
 
     if (existingOrder) {
@@ -84,7 +84,11 @@ export class MenuComponent implements OnInit {
     }
   }
 
-  placeOrder(): void {
+  private navigateToOrders(): void {
+    this.router.navigate(['/order']);
+  }
+
+  public placeOrder(): void {
     if (this.userOrder.length === 0) {
       alert('No items in the order to place.');
       return;
@@ -93,13 +97,14 @@ export class MenuComponent implements OnInit {
     if (this.isEditing && this.orderId) {
       this.orderService.updateOrder(this.orderId, this.userOrder).subscribe(response => {
         this.response = response;
+        this.navigateToOrders();
       });
     } else {
       this.orderService.placeOrder(this.userOrder).subscribe(response => {
         this.userOrder = [];
         this.response = response;
+        this.navigateToOrders();
       });
     }
-    this.router.navigate(['/orders']);
   }
 }

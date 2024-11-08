@@ -1,8 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { OrderService } from '../../../services/order/order.service';
-import { filter } from 'rxjs';
-import { FoodOrder } from 'src/app/models/food-order';
-import { GenericResponseDTO } from 'src/app/models/generic-response-dto';
+import { IFoodOrder } from 'src/app/models/food-order';
+import { IGenericResponse } from 'src/app/models/generic-response-dto';
 
 @Component({
   selector: 'app-all-orders',
@@ -10,38 +9,29 @@ import { GenericResponseDTO } from 'src/app/models/generic-response-dto';
   styleUrls: ['./all-orders.component.css']
 })
 export class AllOrdersComponent implements OnInit {
-  @Input() selectedUser: string;
-  orders: FoodOrder[] = [];
-  filteredOrders: FoodOrder[] = [];
-  response: GenericResponseDTO<FoodOrder[]>;
+  @Input() public selectedUser: string;
+  public filteredOrders: IFoodOrder[] = [];
+  public response: IGenericResponse<IFoodOrder[]>;
 
   constructor(private orderService: OrderService) { }
 
-  ngOnInit(): void {
-    this.orderService.getAllOrders().subscribe(response => {
-      this.orders = response.data;
-      this.filterOrders(this.selectedUser);
-    });
-  }
-
-  ngOnChanges(): void {
+  public ngOnInit(): void {
     this.filterOrders(this.selectedUser);
   }
 
-  filterOrders(selectedUser: string): void {
-    if (selectedUser === 'all') {
-      this.filteredOrders = this.orders;
-    } else {
-      this.orderService.getSpecificUserOrder(parseInt(selectedUser, 10)).subscribe(response => {
-        this.response = response;
-        this.filteredOrders = response.data;
+  public ngOnChanges(): void {
+    this.filterOrders(this.selectedUser);
+  }
 
-        if (!this.filteredOrders.length) {
-          this.response.message = `No orders for this User`;
-        } else {
-          this.response.message = ``;
-        }
-      });
-    }
+  private filterOrders(selectedUser: string): void {
+    this.orderService.getUserOrder(selectedUser).subscribe(response => {
+      this.filteredOrders = response.data;
+      this.response = response;
+      if (!this.filteredOrders.length) {
+        this.response.message = `No orders for this User`;
+      } else {
+        this.response.message = ``;
+      }
+    });
   }
 }

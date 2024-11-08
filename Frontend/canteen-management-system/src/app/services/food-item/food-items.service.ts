@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { FoodItem } from 'src/app/models/food-item';
-import { GenericResponseDTO } from 'src/app/models/generic-response-dto';
-import { UserOrder } from 'src/app/models/user-order';
+import { IFoodItem } from 'src/app/models/food-item';
+import { IGenericResponse } from 'src/app/models/generic-response-dto';
+import { IUserOrder } from 'src/app/models/user-order';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -12,21 +12,21 @@ import { environment } from 'src/environments/environment';
 export class FoodItemsService {
   private apiUrl = environment.apiUrl;
 
-  constructor(private httpClient: HttpClient) { }
+  public constructor(private httpClient: HttpClient) { }
 
-  getFoodItems(): Observable<GenericResponseDTO<FoodItem[]>> {
-    return this.httpClient.get<GenericResponseDTO<FoodItem[]>>(`${this.apiUrl}/item`);
+  public getFoodItems(): Observable<IGenericResponse<IFoodItem[]>> {
+    return this.httpClient.get<IGenericResponse<IFoodItem[]>>(`${this.apiUrl}/item`);
   }
 
-  getFoodItem(itemId: number): Observable<GenericResponseDTO<FoodItem>> {
-    return this.httpClient.get<GenericResponseDTO<FoodItem>>(`${this.apiUrl}/item/${itemId}`);
+  public getFoodItem(itemId: number): Observable<IGenericResponse<IFoodItem>> {
+    return this.httpClient.get<IGenericResponse<IFoodItem>>(`${this.apiUrl}/item/${itemId}`);
   }
 
-  addFoodItem(foodItem: FoodItem): Observable<GenericResponseDTO<FoodItem>> {
-    return this.httpClient.post<GenericResponseDTO<FoodItem>>(`${this.apiUrl}/item`, foodItem);
+  public addFoodItem(foodItem: IFoodItem): Observable<IGenericResponse<IFoodItem>> {
+    return this.httpClient.post<IGenericResponse<IFoodItem>>(`${this.apiUrl}/item`, foodItem);
   }
 
-  editFoodItem(foodItem: FoodItem): Observable<GenericResponseDTO<FoodItem>> {
-    return this.httpClient.put<GenericResponseDTO<FoodItem>>(`${this.apiUrl}/item`, foodItem);
+  public editFoodItem(foodItem: IFoodItem): Observable<IGenericResponse<IFoodItem>> {
+    return this.httpClient.put<IGenericResponse<IFoodItem>>(`${this.apiUrl}/item`, foodItem);
   }
 }

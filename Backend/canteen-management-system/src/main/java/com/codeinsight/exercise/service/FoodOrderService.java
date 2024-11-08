@@ -17,5 +17,5 @@ public interface FoodOrderService {
 
 	public GenericResponseDTO<List<OrderDTO>> getAllOrders();
 
-	public GenericResponseDTO<List<OrderDTO>> getUserOrder(long userId);
+	public GenericResponseDTO<List<OrderDTO>> getUserOrder(String selectedUser);
 }

@@ -1,4 +1,4 @@
-export interface GenericResponseDTO<T> {
+export interface IGenericResponse<T> {
     statusCode: number;
     error: String;
     message: String;

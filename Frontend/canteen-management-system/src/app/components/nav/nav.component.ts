@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Role } from 'src/app/models/role';
 import { LoginService } from 'src/app/services/user/login.service';
@@ -9,13 +9,14 @@ import { LoginService } from 'src/app/services/user/login.service';
   styleUrls: ['./nav.component.css']
 })
 export class NavComponent {
-  isAuthenticated: boolean = false;
+  public isAuthenticated: boolean = false;
+  public isAdmin: boolean = false;
+  public isUser: boolean = false;
   private roles = Role;
-  isAdmin: boolean = false;
-  isUser: boolean = false;
+
   constructor(private loginService: LoginService, private router: Router) { }
 
-  ngOnInit() {
+  public ngOnInit() {
     this.loginService.isAuthenticated$.subscribe(auth => this.isAuthenticated = auth);
     this.loginService.isAdmin$.subscribe(admin => this.isAdmin = admin);
     this.loginService.isUser$.subscribe(user => this.isUser = user);
@@ -23,21 +24,28 @@ export class NavComponent {
     this.loadUserState();
   }
 
-  isActive(route: string): boolean {
+  get navigationItems() {
+    return [
+      { label: 'Orders', link: '/order', show: ((this.isUser === true) || (this.isAdmin === true)) },
+      { label: 'Food Items', link: '/food-item', show: this.isAdmin === true },
+      { label: 'Users', link: '/user', show: this.isAdmin === true },
+      { label: 'All Orders', link: '/all-orders', show: this.isAdmin === true },
+      { label: 'Snackology', link: '/login', show: this.isAuthenticated === false }
+    ];
+  }
+
+  public isActive(route: string): boolean {
     return this.router.url === route;
   }
 
-  loadUserState(): void {
+  private loadUserState(): void {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     this.isAuthenticated = !!currentUser.token;
     this.isAdmin = currentUser.role === this.roles.Admin;
     this.isUser = currentUser.role === this.roles.User;
   }
 
-  logout(): void {
+  public logout(): void {
     this.loginService.logout();
-    this.isAuthenticated = false;
-    this.isAdmin = false;
-    this.isUser = false;
   }
 }

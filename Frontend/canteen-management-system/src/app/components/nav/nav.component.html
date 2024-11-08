@@ -1,0 +1,12 @@
+<nav>
+    <ul>
+        <ng-container *ngFor="let item of navigationItems">
+            <li *ngIf="item.show">
+                <a [routerLink]="item.link" [ngClass]="{'active': isActive(item.link)}">{{item.label}}</a>
+            </li>
+        </ng-container>
+        <li *ngIf="isAuthenticated">
+            <a routerLink="" (click)="logout()">Logout</a>
+        </li>
+    </ul>
+</nav>

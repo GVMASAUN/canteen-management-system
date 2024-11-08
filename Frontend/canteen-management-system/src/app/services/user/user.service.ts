@@ -1,25 +1,26 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { GenericResponseDTO } from 'src/app/models/generic-response-dto';
+import { Observable, tap } from 'rxjs';
+import { IGenericResponse } from 'src/app/models/generic-response-dto';
 import { Role } from 'src/app/models/role';
-import { User } from 'src/app/models/user';
+import { IUser } from 'src/app/models/user';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
+  private readonly CURRENT_USER = "currentUser";
   private apiUrl = environment.apiUrl;
   private roles = Role;
-  isAuthenticated: boolean = false;
-  isAdmin: boolean = false;
-  isSimpleUser: boolean = false;
+  private isAuthenticated: boolean = false;
+  private isAdmin: boolean = false;
+  private isSimpleUser: boolean = false;
 
-  constructor(private httpClient: HttpClient) { }
+  public constructor(private httpClient: HttpClient) { }
 
-  isAuthenticatedUser(): boolean {
-    let currentUserString: string | null = localStorage.getItem('currentUser');
+  public isAuthenticatedUser(): boolean {
+    let currentUserString: string | null = localStorage.getItem(this.CURRENT_USER);
     if (currentUserString) {
       if (JSON.parse(currentUserString).token) {
         this.isAuthenticated = true;
@@ -28,7 +29,7 @@ export class UserService {
     return this.isAuthenticated;
   }
 
-  isAdminUser(): boolean {
+  public isAdminUser(): boolean {
     let currentUserString: string | null = localStorage.getItem('currentUser');
 
     if (currentUserString) {
@@ -40,7 +41,7 @@ export class UserService {
     return this.isAdmin;
   }
 
-  isUser(): boolean {
+  public isUser(): boolean {
     let currentUserString: string | null = localStorage.getItem('currentUser');
     if (currentUserString) {
       const currentUser = JSON.parse(currentUserString);
@@ -51,17 +52,26 @@ export class UserService {
     return this.isSimpleUser;
   }
 
-  logout(): void {
-    if (typeof (localStorage) !== undefined) {
-      localStorage.clear();
-    }
+  public logout(): Observable<IGenericResponse<IUser>> {
+    return this.httpClient.post<IGenericResponse<IUser>>(`${this.apiUrl}/logout`, {}).pipe(
+      tap({
+        next: () => {
+          if (typeof localStorage !== undefined) {
+            localStorage.clear();
+          }
+        },
+        error: (err) => {
+          console.error('Error occurred:', err);
+        }
+      })
+    );
   }
 
-  getUsers(): Observable<GenericResponseDTO<User[]>> {
-    return this.httpClient.get<GenericResponseDTO<User[]>>(`${this.apiUrl}/users`);
+  public getUsers(): Observable<IGenericResponse<IUser[]>> {
+    return this.httpClient.get<IGenericResponse<IUser[]>>(`${this.apiUrl}/user`);
   }
 
-  deleteUser(userId: number): Observable<GenericResponseDTO<User>> {
-    return this.httpClient.delete<GenericResponseDTO<User>>(`${this.apiUrl}/user/${userId}`);
+  public deleteUser(userId: number): Observable<IGenericResponse<IUser>> {
+    return this.httpClient.delete<IGenericResponse<IUser>>(`${this.apiUrl}/user/${userId}`);
   }
 }

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { User } from '../../models/user';
+import { IUser } from '../../models/user';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { GenericResponseDTO } from 'src/app/models/generic-response-dto';
+import { IGenericResponse } from 'src/app/models/generic-response-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -11,17 +11,17 @@ import { GenericResponseDTO } from 'src/app/models/generic-response-dto';
 export class RegisterService {
   private apiUrl = environment.apiUrl;
 
-  constructor(private httpClient: HttpClient) { }
+  public constructor(private httpClient: HttpClient) { }
 
-  registerUser(user: User): Observable<GenericResponseDTO<User>> {
-    return this.httpClient.post<GenericResponseDTO<User>>(`${this.apiUrl}/register`, user);
+  public registerUser(user: IUser): Observable<IGenericResponse<IUser>> {
+    return this.httpClient.post<IGenericResponse<IUser>>(`${this.apiUrl}/register`, user);
   }
 
-  getUserById(userId: number): Observable<GenericResponseDTO<User>> {
-    return this.httpClient.get<GenericResponseDTO<User>>(`${this.apiUrl}/user/${userId}`);
+  public getUserById(userId: number): Observable<IGenericResponse<IUser>> {
+    return this.httpClient.get<IGenericResponse<IUser>>(`${this.apiUrl}/user/${userId}`);
   }
 
-  updateUser(userId: number, user: User): Observable<GenericResponseDTO<User>> {
-    return this.httpClient.put<GenericResponseDTO<User>>(`${this.apiUrl}/user/${userId}`, user);
+  public updateUser(userId: number, user: IUser): Observable<IGenericResponse<IUser>> {
+    return this.httpClient.put<IGenericResponse<IUser>>(`${this.apiUrl}/user/${userId}`, user);
   }
 }

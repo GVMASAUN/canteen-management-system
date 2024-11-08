@@ -7,9 +7,9 @@ import { Component } from '@angular/core';
 })
 export class UserOrdersComponent {
   private readonly ALL: string = "all";
-  selectedUser: string = this.ALL;
+  public selectedUser: string = this.ALL;
 
-  onUserChange(userId: string): void {
+  public onUserChange(userId: string): void {
     this.selectedUser = userId;
   }
 }

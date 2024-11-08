@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.codeinsight.exercise.DTO.GenericResponseDTO;
@@ -34,14 +35,14 @@ public class OrderController {
 		return ResponseEntity.ok(foodOrderService.getOrderDetails(Long.parseLong(id)));
 	}
 	
-	@GetMapping("/user/order")
+	@GetMapping("/order/user")
 	public ResponseEntity<GenericResponseDTO<List<OrderDTO>>> getCurrentUserOrders() {
 		return ResponseEntity.ok(foodOrderService.getCurrentUserOrders());
 	}
-	
-	@GetMapping("/user/order/{id}")
-	public ResponseEntity<GenericResponseDTO<List<OrderDTO>>> getUserOrder(@PathVariable String id){
-		return ResponseEntity.ok(foodOrderService.getUserOrder(Long.parseLong(id)));
+
+	@GetMapping("/order")
+	public ResponseEntity<GenericResponseDTO<List<OrderDTO>>> getUserOrder(@RequestParam String selectedUser){
+		return ResponseEntity.ok(foodOrderService.getUserOrder(selectedUser));
 	}
 	
 	@GetMapping("/orders")
@@ -49,7 +50,7 @@ public class OrderController {
 		return ResponseEntity.ok(foodOrderService.getAllOrders());
 	}
 	
-	@PutMapping("order/{id}")
+	@PutMapping("/order/{id}")
 	public ResponseEntity<GenericResponseDTO<OrderDTO>> updateUserOrder(@PathVariable String id, @RequestBody List<OrderItemDTO> orderItemDTO) {
 		return ResponseEntity.ok(foodOrderService.updateOrder(orderItemDTO,Long.parseLong(id)));
 	}

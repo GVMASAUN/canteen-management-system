@@ -11,8 +11,9 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.codeinsight.exercise.service.JwtService;
-import com.codeinsight.exercise.service.UserServiceImpl;
+import com.codeinsight.exercise.service.UserService;
+import com.codeinsight.exercise.service.implementations.JwtServiceImpl;
+import com.codeinsight.exercise.service.implementations.UserServiceImpl;
 
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -24,13 +25,9 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
 	@Autowired
-	private JwtService jwtService;
+	private JwtServiceImpl jwtService;
 	@Autowired
-	private UserServiceImpl userService;
-	
-	public JwtAuthFilter(UserServiceImpl userService) {
-		this.userService = userService;
-	}
+	private UserService userService;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -48,7 +45,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 		username = jwtService.extractUsername(jwtToken);
 
 		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-			UserDetails userDetails = userService.loadUserByUsername(username);
+			UserDetails userDetails = ((UserServiceImpl) userService).loadUserByUsername(username);
 
 			try {
 				if (jwtService.isTokenValid(jwtToken, userDetails)) {

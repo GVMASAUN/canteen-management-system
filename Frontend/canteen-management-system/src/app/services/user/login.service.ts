@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { User } from '../../models/user';
+import { IUser } from '../../models/user';
 import { UserService } from './user.service';
 import { environment } from 'src/environments/environment';
 import { Role } from 'src/app/models/role';
-import { GenericResponseDTO } from 'src/app/models/generic-response-dto';
+import { IGenericResponse } from 'src/app/models/generic-response-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -17,28 +17,29 @@ export class LoginService {
   private admin = new BehaviorSubject<boolean>(false);
   private user = new BehaviorSubject<boolean>(false);
 
-  isAuthenticated$ = this.authenticated.asObservable();
-  isAdmin$ = this.admin.asObservable();
-  isUser$ = this.user.asObservable();
+  public isAuthenticated$ = this.authenticated.asObservable();
+  public isAdmin$ = this.admin.asObservable();
+  public isUser$ = this.user.asObservable();
 
-  constructor(private httpClient: HttpClient, private userService: UserService) { }
+  public constructor(private httpClient: HttpClient, private userService: UserService) { }
 
-  login(user: User): Observable<GenericResponseDTO<User>> {
-    return this.httpClient.post<GenericResponseDTO<User>>(`${this.apiUrl}/login`, user).pipe(
+  public login(user: IUser): Observable<IGenericResponse<IUser>> {
+    return this.httpClient.post<IGenericResponse<IUser>>(`${this.apiUrl}/login`, user).pipe(
       tap(response => {
-        const isAdmin = response.data.role === this.roles.Admin;
-        const isUser = response.data.role === this.roles.User;
+        const isAdmin = response.data?.role === this.roles.Admin;
+        const isUser = response.data?.role === this.roles.User;
 
-        this.authenticated.next(true);
+        if (response.data) {
+          this.authenticated.next(true);
+        }
         this.admin.next(isAdmin);
         this.user.next(isUser);
-
       })
     );
   }
 
-  logout() {
-    this.userService.logout();
+  public logout(): void {
+    this.userService.logout().subscribe();
     this.authenticated.next(false);
     this.admin.next(false);
     this.user.next(false);

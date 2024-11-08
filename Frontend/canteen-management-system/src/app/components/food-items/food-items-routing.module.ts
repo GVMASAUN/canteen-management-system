@@ -6,12 +6,6 @@ import { AddFoodItemComponent } from './add-food-item/add-food-item.component';
 const routes: Routes = [
   {
     path: '', component: EditFoodItemComponent
-  },
-  {
-    path: 'add', component: AddFoodItemComponent
-  },
-  {
-    path: 'edit/:id', component: AddFoodItemComponent
   }
 ];
 

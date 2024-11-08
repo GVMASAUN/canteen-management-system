@@ -1,5 +1,6 @@
 <form [formGroup]="foodItemForm" (ngSubmit)="addItem()" class="food-item-form">
     <h2>{{ isEditing ? 'Edit Food Item' : 'Add Food Item' }}</h2>
+    <button type="button" class="close-popup-button" (click)="close()">Close</button>
     <p *ngIf="response?.error" class="error-message">{{response.error}}</p>
 
     <div class="form-group">

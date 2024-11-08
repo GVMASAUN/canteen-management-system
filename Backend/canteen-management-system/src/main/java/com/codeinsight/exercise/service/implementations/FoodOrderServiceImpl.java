@@ -1,4 +1,4 @@
-package com.codeinsight.exercise.service;
+package com.codeinsight.exercise.service.implementations;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,10 +20,15 @@ import com.codeinsight.exercise.entity.User;
 import com.codeinsight.exercise.repository.FoodItemRepository;
 import com.codeinsight.exercise.repository.FoodOrderRepository;
 import com.codeinsight.exercise.repository.UserRepository;
+import com.codeinsight.exercise.service.FoodOrderService;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class FoodOrderServiceImpl implements FoodOrderService {
-
+	private static Long DEFAULT_USER_ID = 0L;
+	private static String ALL_ORDERS = "all";
+	
 	@Autowired
 	private FoodItemRepository foodItemRepository;
 	@Autowired
@@ -34,6 +39,7 @@ public class FoodOrderServiceImpl implements FoodOrderService {
 	private UserRepository userRepository;
 
 	@Override
+	@Transactional
 	public GenericResponseDTO<OrderDTO> updateOrder(List<OrderItemDTO> orderItemDTO, Long orderId) {
 		GenericResponseDTO<OrderDTO> responseDTO = new GenericResponseDTO<OrderDTO>();
 
@@ -47,7 +53,7 @@ public class FoodOrderServiceImpl implements FoodOrderService {
 			foodOrder.getOrderDetails().addAll(orderDetails);
 			foodOrder.setPrice(totalPrice);
 
-			saveFoodOrder(foodOrder);
+			foodOrderRepository.save(foodOrder);
 
 			responseDTO.setStatusCode(HttpStatus.OK.value());
 			responseDTO.setMessage("Order Updated successfully");
@@ -59,6 +65,7 @@ public class FoodOrderServiceImpl implements FoodOrderService {
 	}
 
 	@Override
+	@Transactional
 	public GenericResponseDTO<OrderDTO> storeOrderDetails(List<OrderItemDTO> orderItemDTO) {
 		GenericResponseDTO<OrderDTO> responseDTO = new GenericResponseDTO<OrderDTO>();
 
@@ -73,7 +80,7 @@ public class FoodOrderServiceImpl implements FoodOrderService {
 			foodOrder.setPrice(totalPrice);
 			foodOrder.setUser(user);
 
-			saveFoodOrder(foodOrder);
+			foodOrderRepository.save(foodOrder);
 
 			responseDTO.setStatusCode(HttpStatus.OK.value());
 			responseDTO.setMessage("Order placed successfully");
@@ -84,6 +91,7 @@ public class FoodOrderServiceImpl implements FoodOrderService {
 		return responseDTO;
 	}
 
+	@Transactional
 	private Set<OrderDetails> createOrderDetails(List<OrderItemDTO> orderItemDTO) {
 		Set<OrderDetails> orderDetails = new HashSet<>();
 		for (OrderItemDTO orderItem : orderItemDTO) {
@@ -101,11 +109,8 @@ public class FoodOrderServiceImpl implements FoodOrderService {
 		return orderDetails.stream().map(OrderDetails::getTotalPrice).reduce(0f, Float::sum);
 	}
 
-	private void saveFoodOrder(FoodOrder foodOrder) {
-		foodOrderRepository.save(foodOrder);
-	}
-
 	@Override
+	@Transactional
 	public GenericResponseDTO<OrderDTO> getOrderDetails(long orderId) {
 		GenericResponseDTO<OrderDTO> responseDTO = new GenericResponseDTO<OrderDTO>();
 		
@@ -127,6 +132,7 @@ public class FoodOrderServiceImpl implements FoodOrderService {
 	}
 
 	@Override
+	@Transactional
 	public GenericResponseDTO<List<OrderDTO>> getCurrentUserOrders() {
 		GenericResponseDTO<List<OrderDTO>> responseDTO = new GenericResponseDTO<List<OrderDTO>>();
 		List<OrderDTO> ordersDTO = new ArrayList<OrderDTO>();
@@ -152,6 +158,7 @@ public class FoodOrderServiceImpl implements FoodOrderService {
 	}
 
 	@Override
+	@Transactional
 	public GenericResponseDTO<List<OrderDTO>> getAllOrders() {
 		GenericResponseDTO<List<OrderDTO>> responseDTO = new GenericResponseDTO<List<OrderDTO>>();
 		List<OrderDTO> ordersDTO = new ArrayList<OrderDTO>();
@@ -186,13 +193,23 @@ public class FoodOrderServiceImpl implements FoodOrderService {
 	}
 
 	@Override
-	public GenericResponseDTO<List<OrderDTO>> getUserOrder(long userId) {
+	@Transactional
+	public GenericResponseDTO<List<OrderDTO>> getUserOrder(String selectedUser) {
 		GenericResponseDTO<List<OrderDTO>> responseDTO = new GenericResponseDTO<List<OrderDTO>>();
 		List<OrderDTO> ordersDTO = new ArrayList<OrderDTO>();
+		Long userId;
+		
 		try {
-			User user = userRepository.getReferenceById(userId);
+			List<FoodOrder> foodOrders = new ArrayList<FoodOrder>();
 			
-			user.getFoodOrders().forEach(order -> {
+			if(ALL_ORDERS.equals(selectedUser)) {
+				userId = DEFAULT_USER_ID;
+			} else {
+				userId = Long.parseLong(selectedUser);
+			}
+			foodOrders = foodOrderRepository.findAllOrSpecificUserOrders(userId);
+			
+			foodOrders.forEach(order -> {
 				OrderDTO orderDTO = populateOrderDTOFromFoodOrder(order);
 				ordersDTO.add(orderDTO);
 			});

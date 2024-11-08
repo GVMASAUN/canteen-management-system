@@ -13,5 +13,5 @@ public interface FoodItemService {
 
 	public GenericResponseDTO<List<FoodItem>> getAllFoodItems();
 
-	public GenericResponseDTO<FoodItem> getFoodItem(long itemId);
+	public GenericResponseDTO<FoodItemDTO> getFoodItem(long itemId);
 }

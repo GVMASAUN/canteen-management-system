@@ -1,6 +1,7 @@
 <div class="user-list-container">
     <h2>User List</h2>
-    <button routerLink="add" class=" add-user-button">Add User</button>
+    <p *ngIf="response?.error">{{response.error}}</p>
+    <button routerLink="add" class="add-user-button">Add User</button>
 
     <div class="user-card" *ngFor="let user of users">
         <div class="button-container">

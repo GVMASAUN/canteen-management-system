@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { User } from '../../models/user';
+import { IUser } from '../../models/user';
 import { LoginService } from '../../services/user/login.service';
 import { Router } from '@angular/router';
-import { GenericResponseDTO } from 'src/app/models/generic-response-dto';
+import { IGenericResponse } from 'src/app/models/generic-response-dto';
 
 @Component({
   selector: 'app-login',
@@ -12,11 +12,10 @@ import { GenericResponseDTO } from 'src/app/models/generic-response-dto';
 })
 export class LoginComponent {
   private readonly ok: number = 200;
-  loginForm: FormGroup;
-  user: User;
-  response: GenericResponseDTO<User>;
+  public loginForm: FormGroup;
+  public response: IGenericResponse<IUser>;
 
-  constructor(private formBuilder: FormBuilder, private loginService: LoginService, private router: Router) {
+  public constructor(private formBuilder: FormBuilder, private loginService: LoginService, private router: Router) {
     this.loginForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
@@ -29,18 +28,17 @@ export class LoginComponent {
     });
   }
 
-  login(): void {
+  public login(): void {
     if (this.loginForm.valid) {
       this.loginService.login(this.loginForm.value).subscribe(response => {
         this.response = response;
         if ((response?.error == null) || (response.statusCode == this.ok)) {
           localStorage.setItem('currentUser', JSON.stringify(response.data));
-          this.router.navigate(['/orders']);
-        }
+          this.router.navigate(['/order']);
+        } else return;
       });
     } else {
       this.markAllAsTouched();
     }
-
   }
 }

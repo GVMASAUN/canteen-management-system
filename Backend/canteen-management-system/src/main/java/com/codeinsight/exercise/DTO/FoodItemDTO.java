@@ -28,9 +28,4 @@ public class FoodItemDTO {
 	public void setItemPrice(float itemPrice) {
 		this.itemPrice = itemPrice;
 	}
-
-	@Override
-	public String toString() {
-		return "FoodItemDTO [itemId=" + itemId + ", itemName=" + itemName + ", itemPrice=" + itemPrice + "]";
-	}
 }

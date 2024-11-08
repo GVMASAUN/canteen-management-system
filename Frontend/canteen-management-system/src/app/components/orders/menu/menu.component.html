@@ -1,10 +1,9 @@
 <div class="food-items-container">
     <h2>Food Items</h2>
     <p *ngIf="response?.error">{{response.error}}</p>
-    <p *ngIf="response?.message">{{response.message}}</p>
     <div class="food-item" *ngFor="let foodItem of foodItems">
         <div class="food-item-info">
-            <h2>{{ foodItem.itemId }}&nbsp;&nbsp;&nbsp; {{ foodItem.itemName }}</h2>
+            <h1>{{ foodItem.itemId }}&nbsp;&nbsp;&nbsp; {{ foodItem.itemName }}</h1>
             <p class="price">₹{{ foodItem.itemPrice }}</p>
         </div>
         <div class="action-buttons">
@@ -13,7 +12,7 @@
         </div>
     </div>
     <div class="order-summary" *ngIf="userOrder.length > 0">
-        <h3>Order Summary</h3>
+        <h2>Order Summary</h2>
         <div *ngFor="let order of userOrder">
             <p>Item Name: {{order.itemName}} | Quantity: {{ order.quantity }}</p>
         </div>
