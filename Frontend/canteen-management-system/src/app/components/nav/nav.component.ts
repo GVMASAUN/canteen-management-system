@@ -35,7 +35,9 @@ export class NavComponent {
   }
 
   public isActive(route: string): boolean {
-    return this.router.url === route;
+    let basePath = this.router.url.split('/');
+    let segment = '/' + basePath[1];
+    return segment === route;
   }
 
   private loadUserState(): void {

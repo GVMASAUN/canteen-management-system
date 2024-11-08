@@ -1,6 +1,6 @@
 <form [formGroup]="foodItemForm" (ngSubmit)="addItem()" class="food-item-form">
     <h2>{{ isEditing ? 'Edit Food Item' : 'Add Food Item' }}</h2>
-    <button type="button" class="close-popup-button" (click)="close()">Close</button>
+    <!-- <button type="button" class="close-popup-button" (click)="close()">Close</button> -->
     <p *ngIf="response?.error" class="error-message">{{response.error}}</p>
 
     <div class="form-group">
@@ -22,7 +22,11 @@
             <div *ngIf="foodItemForm.get('itemPrice')?.hasError('required')">Item price is required.</div>
         </div>
     </div>
-
-    <button type="submit" class="add-item-button">{{ isEditing ? 'Update Item' : 'Add
-        Item' }}</button>
+    <div class="buttons">
+        <div class="action_btn">
+            <button type="submit" class="submit">{{ isEditing ? 'Update Item' : 'Add
+                Item' }}</button>
+            <button type="button" class="close" (click)="close()">Close</button>
+        </div>
+    </div>
 </form>

@@ -36,7 +36,8 @@ export class EditFoodItemComponent implements OnInit {
       width: '490px',
       height: '370px',
       hasBackdrop: true,
-      backdropClass: 'blurred-backdrop'
+      backdropClass: 'blurred-backdrop',
+      autoFocus: false
 
     });
     dialogRef.afterClosed().subscribe(() => {

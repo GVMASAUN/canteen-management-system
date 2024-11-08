@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { OrdersRoutingModule } from './orders-routing.module';
 import { OrdersComponent } from './orders/orders.component';
 import { MenuComponent } from './menu/menu.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -13,6 +14,7 @@ import { MenuComponent } from './menu/menu.component';
   ],
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     OrdersRoutingModule
   ]
 })
