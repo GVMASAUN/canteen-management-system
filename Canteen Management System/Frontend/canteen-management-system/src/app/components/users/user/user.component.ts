@@ -24,7 +24,7 @@ export class UserComponent {
   }
 
   public editUser(userId: number): void {
-    this.router.navigate(['users', 'edit', userId]);
+    this.router.navigate(['user', 'edit', userId]);
   }
 
   public deleteUser(userId: number): void {
