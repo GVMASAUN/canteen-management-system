@@ -30,7 +30,6 @@ public class JwtServiceImpl implements JwtService {
 	
 	public JwtServiceImpl(@Value("${security.jwt.secret-key}") String secretKey) {
 		this.secretKey = secretKey;
-		System.out.println(secretKey);
 		byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
 	}
